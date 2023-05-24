@@ -25,9 +25,20 @@ fruityvice_normalized = pd.json_normalize(fruityvice_response.json())
 st.dataframe(fruityvice_normalized)
 
 import snowflake.connector
+
 my_cnx = snowflake.connector.connect(**st.secrets ["snowflake"])
+# Get the fruit load list from Snowflake
 my_cur = my_cnx.cursor()
-my_cur.execute("select * from fruit_load_list")
-my_data_rows = my_cur. fetchall ()
+my_cur.execute("SELECT * FROM fruit_load_list")
+my_data_rows = my_cur.fetchall()
+
+# Display the fruit load list
 st.header("The fruit load list contains:")
 st.dataframe(my_data_rows)
+
+# Add a fruit to the list using user input
+new_fruit = st.text_input("Add a fruit to the list:")
+if new_fruit:
+    my_cur.execute("INSERT INTO fruit_load_list (fruit_name) VALUES (%s)", (new_fruit,))
+    my_cnx.commit()
+    st.success("Fruit added successfully!")
