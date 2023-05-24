@@ -1,10 +1,7 @@
 import streamlit as st
 import pandas as pd
-import requests
-fruityvice_response = requests.get("https://fruityvice.com/api/fruit/watermelon")
-streamlit.text(fruityvice_response)
-st.title('My Parents New Healthy Diner')
 
+st.title('My Parents New Healthy Diner')
 st.header('🍌🥭 Build Your Own Fruit Smoothie 🥝🍇')
 st.text('Omega 3 & Blueberry Oatmeal')
 st.text('Kale, Spinach & Rocket Smoothie')
@@ -15,3 +12,9 @@ my_fruit_list = my_fruit_list.set_index('Fruit')  # Fix the line to set the inde
 fruits_selected = st.multiselect("Pick some fruits:", list(my_fruit_list.index),['Avocado','Strawberries'])
 fruits_to_show = my_fruit_list.loc[fruits_selected]
 st.dataframe(fruits_to_show)
+
+st.header("Fruityvice Fruit Advice!")
+import requests
+fruityvice_response = requests.get("https://fruityvice.com/api/fruit/watermelon")
+streamlit.text(fruityvice_response.json())
+
