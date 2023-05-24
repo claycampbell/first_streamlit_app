@@ -1,5 +1,5 @@
 import streamlit as st
-import pandas as pd
+import pandas 
 
 st.title('My Parents New Healthy Diner')
 st.header('🍌🥭 Build Your Own Fruit Smoothie 🥝🍇')
