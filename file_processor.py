@@ -1,3 +1,5 @@
+import streamlit as st
+import os
 import openai
 
 def process_file(file_contents):
@@ -18,12 +20,12 @@ def preprocess_brd_text(file_contents):
 
 def generate_user_stories(processed_text):
     # Set up OpenAI API credentials
-    openai_api_key = st.secrets["openai_api_key"]
+    openai_api_key = os.environ.get("OPENAI_API_KEY")
     openai.api_key = openai_api_key
 
     # Generate user stories using OpenAI API
     response = openai.Completion.create(
-        engine="davinci-codex",  # or "davinci" for GPT-3
+        engine="text-davinci-0035-turbo",  # Use GPT-3.5 Turbo engine
         prompt=processed_text,
         max_tokens=1000,  # Adjust as needed
         temperature=0.7,  # Adjust as needed
@@ -37,3 +39,15 @@ def generate_user_stories(processed_text):
 
     # Return the user stories
     return user_stories
+
+# Main Streamlit app code
+def main():
+    # File upload and processing logic
+    uploaded_file = st.file_uploader("Upload BRD file")
+    if uploaded_file is not None:
+        file_contents = uploaded_file.read().decode("utf-8")
+        user_stories = process_file(file_contents)
+        st.write("Generated User Stories:")
+        for story in user_stories:
+            st.write(story)
+
