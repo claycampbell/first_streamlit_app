@@ -1,4 +1,5 @@
 import openai
+import re
 def process_file(file_contents):
     # Preprocess the file contents if necessary
     processed_text = preprocess_brd_text(file_contents)
@@ -15,13 +16,25 @@ def preprocess_brd_text(file_contents):
     processed_text = file_contents
     return processed_text
 
+import openai
+
 def generate_user_stories(processed_text):
-    # Your code for generating user stories goes here
-    user_stories = []  # Define the user_stories variable
+    # Set up OpenAI API credentials
+    openai.api_key = "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"
 
-    # Generate user stories from processed_text
+    # Generate user stories using OpenAI API
+    response = openai.Completion.create(
+        engine="davinci-codex",  # or "davinci" for GPT-3
+        prompt=processed_text,
+        max_tokens=1000,  # Adjust as needed
+        temperature=0.7,  # Adjust as needed
+        n=5,  # Number of user stories to generate
+        stop=None,  # Stop condition to end the generated text, if necessary
+        echo=True  # To include the prompt in the generated text
+    )
+
+    # Extract the generated user stories from the API response
+    user_stories = response.choices[0].text.strip().split('\n')
     
-    return user_stories
-
-
+    # Return the user stories
     return user_stories
