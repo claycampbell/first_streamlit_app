@@ -1,5 +1,5 @@
 import openai
-import re
+
 def process_file(file_contents):
     # Preprocess the file contents if necessary
     processed_text = preprocess_brd_text(file_contents)
@@ -16,12 +16,10 @@ def preprocess_brd_text(file_contents):
     processed_text = file_contents
     return processed_text
 
-import openai
-
 def generate_user_stories(processed_text):
     # Set up OpenAI API credentials
-   openai_api_key = "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"
-    llm = OpenAI(model_name="gpt-4", openai_api_key=openai_api_key)
+    openai_api_key = "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"
+    openai.api_key = openai_api_key
 
     # Generate user stories using OpenAI API
     response = openai.Completion.create(
@@ -36,6 +34,6 @@ def generate_user_stories(processed_text):
 
     # Extract the generated user stories from the API response
     user_stories = response.choices[0].text.strip().split('\n')
-    
+
     # Return the user stories
     return user_stories
