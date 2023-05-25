@@ -18,7 +18,7 @@ def preprocess_brd_text(file_contents):
 
 def generate_user_stories(processed_text):
     # Set up OpenAI API credentials
-    openai_api_key = "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"
+    openai_api_key = st.secrets["openai_api_key"]
     openai.api_key = openai_api_key
 
     # Generate user stories using OpenAI API
