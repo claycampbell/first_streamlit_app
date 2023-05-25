@@ -20,7 +20,9 @@ import openai
 
 def generate_user_stories(processed_text):
     # Set up OpenAI API credentials
-    openai.api_key = "{{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}}"
+   openai_api_key = "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"
+    llm = OpenAI(model_name="gpt-4", openai_api_key=openai_api_key)
+
     # Generate user stories using OpenAI API
     response = openai.Completion.create(
         engine="davinci-codex",  # or "davinci" for GPT-3
