@@ -20,7 +20,7 @@ def preprocess_brd_text(file_contents):
 def generate_user_stories(processed_text):
     # Generate user stories using OpenAI API
     response = openai.Completion.create(
-        engine="text-davinci-0035-turbo",
+        model="gpt-3.5-turbo",
         prompt=processed_text,
         max_tokens=1000,
         temperature=0.7,
