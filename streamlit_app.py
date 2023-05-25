@@ -8,7 +8,6 @@ st.set_page_config(page_title="User Story Generation", page_icon=":memo:")
 # Set up OpenAI API credentials
 os.environ['OPENAI_API_KEY'] = st.secrets['OPENAI_API_KEY']
 
-
 # Preprocess function (if needed)
 def preprocess_brd_text(file_contents):
     # Implement your preprocessing logic here
@@ -20,16 +19,15 @@ def preprocess_brd_text(file_contents):
 # User story generation function
 def generate_user_stories(processed_text):
     # Generate user stories using OpenAI API
-   response = openai.Completion.create(
-    engine="gpt-3.5-turbo",
-    prompt=processed_text,
-    max_tokens=1000,
-    temperature=0.7,
-    n=5,
-    stop=None,
-    echo=True
-)
-
+    response = openai.Completion.create(
+        engine="gpt-3.5-turbo",
+        prompt=processed_text,
+        max_tokens=1000,
+        temperature=0.7,
+        n=5,
+        stop=None,
+        echo=True
+    )
 
     # Extract the generated user stories from the API response
     user_stories = response.choices[0].text.strip().split('\n')
