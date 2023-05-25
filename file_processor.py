@@ -15,9 +15,13 @@ def preprocess_brd_text(file_contents):
     processed_text = file_contents
     return processed_text
 
-def generate_user_stories(prompt):
-    # Use the code I provided earlier to generate user stories using the ChatGPT API
-    # Make sure to have the OpenAI Python package installed and API key set up correctly
-    # ...
+def generate_user_stories(processed_text):
+    # Your code for generating user stories goes here
+    user_stories = []  # Define the user_stories variable
+
+    # Generate user stories from processed_text
+    
+    return user_stories
+
 
     return user_stories
