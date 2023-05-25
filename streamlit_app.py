@@ -20,15 +20,16 @@ def preprocess_brd_text(file_contents):
 # User story generation function
 def generate_user_stories(processed_text):
     # Generate user stories using OpenAI API
-    response = openai.Completion.create(
-        engine="text-davinci-0035-turbo",  # Use GPT-3.5 Turbo engine
-        prompt=processed_text,
-        max_tokens=1000,  # Adjust as needed
-        temperature=0.7,  # Adjust as needed
-        n=5,  # Number of user stories to generate
-        stop=None,  # Stop condition to end the generated text, if necessary
-        echo=True  # To include the prompt in the generated text
-    )
+   response = openai.Completion.create(
+    engine="gpt-3.5-turbo",
+    prompt=processed_text,
+    max_tokens=1000,
+    temperature=0.7,
+    n=5,
+    stop=None,
+    echo=True
+)
+
 
     # Extract the generated user stories from the API response
     user_stories = response.choices[0].text.strip().split('\n')
