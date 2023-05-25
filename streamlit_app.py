@@ -6,8 +6,8 @@ import openai
 st.set_page_config(page_title="User Story Generation", page_icon=":memo:")
 
 # Set up OpenAI API credentials
-openai_api_key = st.secrets["OPENAI_API_KEY"]
-openai.api_key = openai_api_key
+os.environ['OPENAI_API_KEY'] = st.secrets['OPENAI_API_KEY']
+
 
 # Preprocess function (if needed)
 def preprocess_brd_text(file_contents):
