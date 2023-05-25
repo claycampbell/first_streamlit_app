@@ -1,5 +1,3 @@
-pip install streamlit
-
 import streamlit as st
 import os
 from file_processor import process_file
