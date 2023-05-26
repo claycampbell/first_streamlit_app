@@ -49,38 +49,38 @@ async def generate_user_stories():
     result = await qa(prompt)
     display_output(result["answer"])
 
-if st.button("Generate User Stories"):
-    await generate_user_stories()
-
 async def summarize_document():
     prompt = "Please provide a summary of the document."
-    output = conversational_chat(prompt)
+    output = await conversational_chat(prompt)
     st.session_state['history'].append(("Summarize Document", output))
     return output
 
 async def extract_key_topics():
     prompt = "What are the key topics covered in this document?"
-    output = conversational_chat(prompt)
+    output = await conversational_chat(prompt)
     st.session_state['history'].append(("Extract Key Topics", output))
     return output
 
 async def identify_stakeholders():
     prompt = "Who are the stakeholders mentioned in the document?"
-    output = conversational_chat(prompt)
+    output = await conversational_chat(prompt)
     st.session_state['history'].append(("Identify Stakeholders", output))
     return output
 
 async def create_feature_list():
     prompt = "Based on the document, what are the features that should be included?"
-    output = conversational_chat(prompt)
+    output = await conversational_chat(prompt)
     st.session_state['history'].append(("Create Feature List", output))
     return output
 
 async def generate_use_cases():
     prompt = "Generate use cases based on the document."
-    output = conversational_chat(prompt)
+    output = await conversational_chat(prompt)
     st.session_state['history'].append(("Generate Use Cases", output))
     return output
+
+if st.button("Generate User Stories"):
+    await generate_user_stories()
 
 llm = ChatOpenAI(model_name="gpt-3.5-turbo")
 
