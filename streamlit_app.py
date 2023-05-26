@@ -44,69 +44,10 @@ def display_output(output):
     with response_container:
         message(output, key=str(len(st.session_state['generated']) - 1), avatar_style="fun-emoji")
 
-async def conversational_chat(query):
-    result = await qa({"question": query, "chat_history": st.session_state['history']})
-    st.session_state['history'].append((query, result["answer"]))
-    return result["answer"]
-
-def display_output(output):
-    st.session_state['generated'].append(output)
-    with response_container:
-        message(output, key=str(len(st.session_state['generated']) - 1), avatar_style="fun-emoji")
-
 def generate_user_stories():
     prompt = {"question": "Take this document and turn it into user stories that I can give my engineering team to begin development.", "chat_history": st.session_state['history']}
     result = asyncio.run(qa(prompt))
     display_output(result["answer"])
-
-# Define the API call function
-async def conversational_chat(query):
-    result = await qa({"question": query, "chat_history": st.session_state['history']})
-    st.session_state['history'].append((query, result["answer"]))
-    return result["answer"]
-
-# Define the display output function
-def display_output(output):
-    st.session_state['generated'].append(output)
-    with response_container:
-        message(output, key=str(len(st.session_state['generated']) - 1), avatar_style="fun-emoji")
-
-# Define the generate user stories function
-async def generate_user_stories():
-    prompt = {"question": "Take this document and turn it into user stories that I can give my engineering team to begin development.", "chat_history": st.session_state['history']}
-    result = await conversational_chat(prompt)
-    display_output(result)
-
-# Define the button callbacks
-def summarize_document():
-    prompt = "Please provide a summary of the document."
-    output = asyncio.run(conversational_chat(prompt))
-    st.session_state['history'].append(("Summarize Document", output))
-    display_output(output)
-
-def extract_key_topics():
-    prompt = "What are the key topics covered in this document?"
-    output = asyncio.run(conversational_chat(prompt))
-    st.session_state['history'].append(("Extract Key Topics", output))
-    display_output(output)
-
-def identify_stakeholders():
-    prompt = "Who are the stakeholders mentioned in the document?"
-    output = asyncio.run(conversational_chat(prompt))
-    st.session_state['history'].append(("Identify Stakeholders", output))
-    display_output(output)
-
-def create_feature_list():
-    prompt = "Based on the document, what are the features that should be included?"
-    output = asyncio.run(conversational_chat(prompt))
-    st.session_state['history'].append(("Create Feature List", output))
-    display_output(output)
-
-def generate_use_cases():
-    prompt = "Generate use cases based on the document."
-    output = asyncio.run(conversational_chat(prompt))
-    st.session_state['history'].append(("Generate Use Cases", output))
-    display_output(output)
 
 # Create the Streamlit app
 st.title("Business Analyst AI Agent")
@@ -139,12 +80,8 @@ if st.button("Generate Use Cases"):
 
 if st.button("Generate User Stories"):
     asyncio.run(generate_user_stories())
+
 llm = ChatOpenAI(model_name="gpt-3.5-turbo")
-
-if 'history' not in st.session_state:
-    st.session_state['history'] = []
-
-st.title("PDFChat:")
 
 if 'ready' not in st.session_state:
     st.session_state['ready'] = False
@@ -156,50 +93,4 @@ if uploaded_file is not None:
         uploaded_file.seek(0)
         file = uploaded_file.read()
         vectors = get_doc_embeddings(io.BytesIO(file), uploaded_file.name)
-        qa = ConversationalRetrievalChain.from_llm(llm, retriever=vectors.as_retriever(), return_source_documents=True)
-    st.session_state['ready'] = True
-
-st.divider()
-
-if st.session_state['ready']:
-    if 'generated' not in st.session_state:
-        st.session_state['generated'] = ["Welcome! You can now ask any questions regarding " + uploaded_file.name]
-    if 'past' not in st.session_state:
-        st.session_state['past'] = ["Hey!"]
-
-    response_container = st.container()
-    container = st.container()
-
-    with container:
-        with st.form(key='my_form', clear_on_submit=True):
-            user_input = st.text_input("Query:", placeholder="e.g: Summarize the paper in a few sentences", key='input')
-            submit_button = st.form_submit_button(label='Send')
-
-        if submit_button and user_input:
-            output = conversational_chat(user_input)
-            st.session_state['past'].append(user_input)
-            st.session_state['generated'].append(output)
-
-    if st.session_state['generated']:
-        with response_container:
-            for i in range(len(st.session_state['generated'])):
-                message(st.session_state["past"][i], is_user=True, key=str(i) + '_user', avatar_style="thumbs")
-                message(st.session_state["generated"][i], key=str(i), avatar_style="fun-emoji")
-
-    if st.button("Generate User Stories"):
-        generate_user_stories()
-
-    if st.button("Summarize Document"):
-        summarize_document()
-
-    if st.button("Extract Key Topics"):
-        extract_key_topics()
-
-    if st.button("Identify Stakeholders"):
-        identify_stakeholders()
-
-    if st.button("Create Feature List"):
-        create_feature_list()
-
-    if st.button("Generate Use Cases"):
-        generate_use_cases()
+        qa = ConversationalRetrieval
