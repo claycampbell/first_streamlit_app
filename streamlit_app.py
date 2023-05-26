@@ -59,36 +59,86 @@ def generate_user_stories():
     result = asyncio.run(qa(prompt))
     display_output(result["answer"])
 
-async def summarize_document():
+# Define the API call function
+async def conversational_chat(query):
+    result = await qa({"question": query, "chat_history": st.session_state['history']})
+    st.session_state['history'].append((query, result["answer"]))
+    return result["answer"]
+
+# Define the display output function
+def display_output(output):
+    st.session_state['generated'].append(output)
+    with response_container:
+        message(output, key=str(len(st.session_state['generated']) - 1), avatar_style="fun-emoji")
+
+# Define the generate user stories function
+async def generate_user_stories():
+    prompt = {"question": "Take this document and turn it into user stories that I can give my engineering team to begin development.", "chat_history": st.session_state['history']}
+    result = await conversational_chat(prompt)
+    display_output(result)
+
+# Define the button callbacks
+def summarize_document():
     prompt = "Please provide a summary of the document."
-    output = await conversational_chat(prompt)
+    output = asyncio.run(conversational_chat(prompt))
     st.session_state['history'].append(("Summarize Document", output))
-    return output
+    display_output(output)
 
-async def extract_key_topics():
+def extract_key_topics():
     prompt = "What are the key topics covered in this document?"
-    output = await conversational_chat(prompt)
+    output = asyncio.run(conversational_chat(prompt))
     st.session_state['history'].append(("Extract Key Topics", output))
-    return output
+    display_output(output)
 
-async def identify_stakeholders():
+def identify_stakeholders():
     prompt = "Who are the stakeholders mentioned in the document?"
-    output = await conversational_chat(prompt)
+    output = asyncio.run(conversational_chat(prompt))
     st.session_state['history'].append(("Identify Stakeholders", output))
-    return output
+    display_output(output)
 
-async def create_feature_list():
+def create_feature_list():
     prompt = "Based on the document, what are the features that should be included?"
-    output = await conversational_chat(prompt)
+    output = asyncio.run(conversational_chat(prompt))
     st.session_state['history'].append(("Create Feature List", output))
-    return output
+    display_output(output)
 
-async def generate_use_cases():
+def generate_use_cases():
     prompt = "Generate use cases based on the document."
-    output = await conversational_chat(prompt)
+    output = asyncio.run(conversational_chat(prompt))
     st.session_state['history'].append(("Generate Use Cases", output))
-    return output
+    display_output(output)
 
+# Create the Streamlit app
+st.title("Business Analyst AI Agent")
+
+# Define the response container
+response_container = st.empty()
+
+# Initialize session state if not exists
+if 'history' not in st.session_state:
+    st.session_state['history'] = []
+
+if 'generated' not in st.session_state:
+    st.session_state['generated'] = []
+
+# Add the buttons
+if st.button("Summarize Document"):
+    summarize_document()
+
+if st.button("Extract Key Topics"):
+    extract_key_topics()
+
+if st.button("Identify Stakeholders"):
+    identify_stakeholders()
+
+if st.button("Create Feature List"):
+    create_feature_list()
+
+if st.button("Generate Use Cases"):
+    generate_use_cases()
+
+if st.button("Generate User Stories"):
+    asyncio.run(generate_user_stories())
 llm = ChatOpenAI(model_name="gpt-3.5-turbo")
 
 if 'history' not in st.session_state:
