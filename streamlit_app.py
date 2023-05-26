@@ -122,27 +122,39 @@ async def main():
 
         # Button for generating user stories
         if st.button("Generate User Stories"):
+            st.button("Generate User Stories")
             generate_user_stories()
+            await asyncio.sleep(1)  # Add a delay between API calls
 
         # Button for generating use cases
         if st.button("Generate Use Cases"):
+            st.button("Generate Use Cases")
             generate_use_cases()
+            await asyncio.sleep(1)  # Add a delay between API calls
 
         # Button for creating user interface mockups
         if st.button("Create User Interface Mockups"):
+            st.button("Create User Interface Mockups")
             create_ui_mockups()
+            await asyncio.sleep(1)  # Add a delay between API calls
 
         # Button for generating test cases
         if st.button("Generate Test Cases"):
+            st.button("Generate Test Cases")
             generate_test_cases()
+            await asyncio.sleep(1)  # Add a delay between API calls
 
         # Button for collaboration and commenting
         if st.button("Collaborate and Comment"):
+            st.button("Collaborate and Comment")
             collaborate_and_comment()
+            await asyncio.sleep(1)  # Add a delay between API calls
 
         # Button for generating system diagrams
         if st.button("Generate System Diagrams"):
+            st.button("Generate System Diagrams")
             generate_system_diagrams()
+            await asyncio.sleep(1)  # Add a delay between API calls
 
 if __name__ == "__main__":
     asyncio.run(main())
