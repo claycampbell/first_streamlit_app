@@ -1,25 +1,23 @@
-import asyncio
-import io
-import os
-import pickle
-from pathlib import Path
-
-import streamlit as st
-from dotenv import load_dotenv
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.vectorstores import FAISS
 from langchain.chains.question_answering import load_qa_chain
 from langchain.chat_models import ChatOpenAI
 from langchain.chains import ConversationalRetrievalChain
+import pickle
+from pathlib import Path
+from dotenv import load_dotenv
+import os
+import streamlit as st
 from streamlit_chat import message
+import io
+import asyncio
 
 load_dotenv()
-api_key = os.getenv('OPENAI_API_KEY')
-
+api_key = os.getenv('OPENAI_API_KEY')  
 
 async def main():
-    async def store_doc_embeddings(file, filename):
+    async def storeDocEmbeds(file, filename):
         corpus = file.read().decode("utf-8")
 
         splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
@@ -31,22 +29,23 @@ async def main():
         with open(filename + ".pkl", "wb") as f:
             pickle.dump(vectors, f)
 
-    async def get_doc_embeddings(file, filename):
+    async def getDocEmbeds(file, filename):
         if not os.path.isfile(filename + ".pkl"):
-            await store_doc_embeddings(file, filename)
+            await storeDocEmbeds(file, filename)
 
         with open(filename + ".pkl", "rb") as f:
             vectors = pickle.load(f)
 
         return vectors
 
-    async def conversational_chat(query):
+    async def conversational_chat(qa, query):
         result = qa({"question": query, "chat_history": st.session_state['history']})
         st.session_state['history'].append((query, result["answer"]))
         return result["answer"]
 
     llm = ChatOpenAI(model_name="gpt-3.5-turbo")
     chain = load_qa_chain(llm, chain_type="stuff")
+    qa = None  # Initialize the qa variable
 
     if 'history' not in st.session_state:
         st.session_state['history'] = []
@@ -65,28 +64,19 @@ async def main():
             file = uploaded_file.read()
 
             if uploaded_file.type == "pdf":
-                vectors = await get_doc_embeddings(io.BytesIO(file), uploaded_file.name)
-                qa = ConversationalRetrievalChain.from_llm(
-                    ChatOpenAI(model_name="gpt-3.5-turbo"),
-                    retriever=vectors.as_retriever(),
-                    return_source_documents=True
-                )
+                vectors = await getDocEmbeds(io.BytesIO(file), uploaded_file.name)
             elif uploaded_file.type == "docx":
-                vectors = await get_doc_embeddings(io.BytesIO(file), uploaded_file.name)
-                qa = ConversationalRetrievalChain.from_llm(
-                    ChatOpenAI(model_name="gpt-3.5-turbo"),
-                    retriever=vectors.as_retriever(),
-                    return_source_documents=True
-                )
+                vectors = await getDocEmbeds(io.BytesIO(file), uploaded_file.name)
             elif uploaded_file.type == "txt":
-                vectors = await get_doc_embeddings(io.BytesIO(file), uploaded_file.name)
-                qa = ConversationalRetrievalChain.from_llm(
-                    ChatOpenAI(model_name="gpt-                    3.5-turbo"),
-                    retriever=vectors.as_retriever(),
-                    return_source_documents=True
-                )
+                vectors = await getDocEmbeds(io.BytesIO(file), uploaded_file.name)
 
-            st.session_state['ready'] = True
+            qa = ConversationalRetrievalChain.from_llm(
+                ChatOpenAI(model_name="gpt-3.5-turbo"),
+                retriever=vectors.as_retriever(),
+                return_source_documents=True
+            )
+
+        st.session_state['ready'] = True
 
     st.divider()
 
@@ -107,7 +97,7 @@ async def main():
 
             if submit_button and user_input:
                 loop = asyncio.new_event_loop()
-                output = await conversational_chat(user_input)
+                output = await conversational_chat(qa, user_input)
                 loop.close()
 
                 st.session_state['past'].append(user_input)
@@ -122,4 +112,3 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
-
