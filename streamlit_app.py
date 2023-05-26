@@ -38,7 +38,7 @@ async def main():
 
         return vectors
 
-    async def conversational_chat(query):
+    async def conversational_chat(query, vectors):
         result = qa({"question": query, "chat_history": st.session_state['history']})
         st.session_state['history'].append((query, result["answer"]))
         return result["answer"]
@@ -97,10 +97,7 @@ async def main():
             submit_button = st.form_submit_button(label='Send')
 
         if submit_button and user_input:
-            loop = asyncio.new_event_loop()
-            output = loop.run_until_complete(conversational_chat(user_input))
-            loop.close()
-
+            output = await conversational_chat(user_input, vectors)
             st.session_state['past'].append(user_input)
             st.session_state['generated'].append(output)
 
