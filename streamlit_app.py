@@ -42,7 +42,7 @@ async def main():
         return result["answer"]
 
     def generate_user_stories():
-        prompt = "Take this document and turn it into user stories that I can give my engineering team to begin development."
+        prompt = {"question": "Take this document and turn it into user stories that I can give my engineering team to begin development.", "chat_history": st.session_state['history']}
         qa(prompt)
         return
 
