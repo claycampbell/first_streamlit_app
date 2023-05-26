@@ -42,40 +42,40 @@ async def main():
         return result["answer"]
 
     def generate_user_stories():
-        prompt = {"question": "Take this document and turn it into user stories that I can give my engineering team to begin development.", "chat_history": st.session_state['history']}
-        output = qa(prompt)
-        st.session_state['history'].append(("Generate User Stories", output["answer"]))
-        return output["answer"]
+        prompt = "Take this document and turn it into user stories that I can give my engineering team to begin development."
+        output = await conversational_chat(prompt)
+        st.session_state['history'].append(("Generate User Stories", output))
+        return output
 
     def summarize_document():
-        prompt = {"question": "Please provide a summary of the document.", "chat_history": st.session_state['history']}
-        output = qa(prompt)
-        st.session_state['history'].append(("Summarize Document", output["answer"]))
-        return output["answer"]
+        prompt = "Please provide a summary of the document."
+        output = await conversational_chat(prompt)
+        st.session_state['history'].append(("Summarize Document", output))
+        return output
 
     def extract_key_topics():
-        prompt = {"question": "What are the key topics covered in this document?", "chat_history": st.session_state['history']}
-        output = qa(prompt)
-        st.session_state['history'].append(("Extract Key Topics", output["answer"]))
-        return output["answer"]
+        prompt = "What are the key topics covered in this document?"
+        output = await conversational_chat(prompt)
+        st.session_state['history'].append(("Extract Key Topics", output))
+        return output
 
     def identify_stakeholders():
-        prompt = {"question": "Who are the stakeholders mentioned in the document?", "chat_history": st.session_state['history']}
-        output = qa(prompt)
-        st.session_state['history'].append(("Identify Stakeholders", output["answer"]))
-        return output["answer"]
+        prompt = "Who are the stakeholders mentioned in the document?"
+        output = await conversational_chat(prompt)
+        st.session_state['history'].append(("Identify Stakeholders", output))
+        return output
 
     def create_feature_list():
-        prompt = {"question": "Based on the document, what are the features that should be included?", "chat_history": st.session_state['history']}
-        output = qa(prompt)
-        st.session_state['history'].append(("Create Feature List", output["answer"]))
-        return output["answer"]
+        prompt = "Based on the document, what are the features that should be included?"
+        output = await conversational_chat(prompt)
+        st.session_state['history'].append(("Create Feature List", output))
+        return output
 
     def generate_use_cases():
-        prompt = {"question": "Generate use cases based on the document.", "chat_history": st.session_state['history']}
-        output = qa(prompt)
-        st.session_state['history'].append(("Generate Use Cases", output["answer"]))
-        return output["answer"]
+        prompt = "Generate use cases based on the document."
+        output = await conversational_chat(prompt)
+        st.session_state['history'].append(("Generate Use Cases", output))
+        return output
 
     llm = ChatOpenAI(model_name="gpt-3.5-turbo")
 
@@ -124,22 +124,22 @@ async def main():
                     message(st.session_state["past"][i], is_user=True, key=str(i) + '_user', avatar_style="thumbs")
                     message(st.session_state["generated"][i], key=str(i), avatar_style="fun-emoji")
 
-        if st.button("Generate User Stories", key='generate_user_stories'):
+        if st.button("Generate User Stories"):
             generate_user_stories()
 
-        if st.button("Summarize Document", key='summarize_document'):
+        if st.button("Summarize Document"):
             summarize_document()
 
-        if st.button("Extract Key Topics", key='extract_key_topics'):
+        if st.button("Extract Key Topics"):
             extract_key_topics()
 
-        if st.button("Identify Stakeholders", key='identify_stakeholders'):
+        if st.button("Identify Stakeholders"):
             identify_stakeholders()
 
-        if st.button("Create Feature List", key='create_feature_list'):
+        if st.button("Create Feature List"):
             create_feature_list()
 
-        if st.button("Generate Use Cases", key='generate_use_cases'):
+        if st.button("Generate Use Cases"):
             generate_use_cases()
 
 if __name__ == "__main__":
