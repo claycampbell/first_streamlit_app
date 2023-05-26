@@ -116,7 +116,7 @@ async def generate_user_stories():
 
     prompt = "Generate user stories based on the provided document."
 
-    response = await openai.Completion.create(
+    response = openai.Completion.create(
         engine="text-davinci-003",
         prompt=prompt,
         max_tokens=100,
@@ -130,6 +130,7 @@ async def generate_user_stories():
         user_stories.append(user_story)
 
     return user_stories
+
 
 if __name__ == "__main__":
     asyncio.run(main())
