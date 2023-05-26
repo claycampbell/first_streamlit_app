@@ -61,13 +61,19 @@ async def main():
     if 'ready' not in st.session_state:
         st.session_state['ready'] = False
 
-    uploaded_file = st.file_uploader("Choose a file", type="pdf")
+    uploaded_file = st.file_uploader("Choose a file", type=["pdf", "docx", "txt"])
 
     if uploaded_file is not None:
         with st.spinner("Processing..."):
             uploaded_file.seek(0)
             file = uploaded_file.read()
-            vectors = await getDocEmbeds(io.BytesIO(file), uploaded_file.name)
+            if uploaded_file.type == "pdf":
+                vectors = await getDocEmbeds(io.BytesIO(file), uploaded_file.name)
+            elif uploaded_file.type == "docx":
+                text = extract_text_from_docx(file)
+                vectors = await getDocEmbeds(io.StringIO(text), uploaded_file.name)
+            elif uploaded_file.type == "txt":
+                vectors = await getDocEmbeds(io.StringIO(file.decode()), uploaded_file.name)
             qa = ConversationalRetrievalChain.from_llm(llm, retriever=vectors.as_retriever(), return_source_documents=True)
         st.session_state['ready'] = True
 
