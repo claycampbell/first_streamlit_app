@@ -43,32 +43,7 @@ async def main():
 
     def generate_user_stories():
         prompt = {"question": "Take this document and turn it into user stories that I can give my engineering team to begin development.", "chat_history": st.session_state['history']}
-        _ = qa(prompt)
-        return
-
-    def generate_use_cases():
-        prompt = {"question": "Generate use cases based on the document.", "chat_history": st.session_state['history']}
-        _ = qa(prompt)
-        return
-
-    def create_ui_mockups():
-        prompt = {"question": "Create user interface mockups based on the document.", "chat_history": st.session_state['history']}
-        _ = qa(prompt)
-        return
-
-    def generate_test_cases():
-        prompt = {"question": "Generate test cases based on the document.", "chat_history": st.session_state['history']}
-        _ = qa(prompt)
-        return
-
-    def collaborate_and_comment():
-        prompt = {"question": "Enable collaboration and commenting for the document.", "chat_history": st.session_state['history']}
-        _ = qa(prompt)
-        return
-
-    def generate_system_diagrams():
-        prompt = {"question": "Generate system diagrams based on the document.", "chat_history": st.session_state['history']}
-        _ = qa(prompt)
+        qa(prompt)
         return
 
     llm = ChatOpenAI(model_name="gpt-3.5-turbo")
@@ -118,43 +93,8 @@ async def main():
                     message(st.session_state["past"][i], is_user=True, key=str(i) + '_user', avatar_style="thumbs")
                     message(st.session_state["generated"][i], key=str(i), avatar_style="fun-emoji")
 
-        st.subheader("Actions:")
-
-        # Button for generating user stories
-        if st.button("Generate User Stories"):
-            st.button("Generate User Stories")
+        if st.button("Generate User Stories", key='generate_user_stories'):
             generate_user_stories()
-            await asyncio.sleep(1)  # Add a delay between API calls
-
-        # Button for generating use cases
-        if st.button("Generate Use Cases"):
-            st.button("Generate Use Cases")
-            generate_use_cases()
-            await asyncio.sleep(1)  # Add a delay between API calls
-
-        # Button for creating user interface mockups
-        if st.button("Create User Interface Mockups"):
-            st.button("Create User Interface Mockups")
-            create_ui_mockups()
-            await asyncio.sleep(1)  # Add a delay between API calls
-
-        # Button for generating test cases
-        if st.button("Generate Test Cases"):
-            st.button("Generate Test Cases")
-            generate_test_cases()
-            await asyncio.sleep(1)  # Add a delay between API calls
-
-        # Button for collaboration and commenting
-        if st.button("Collaborate and Comment"):
-            st.button("Collaborate and Comment")
-            collaborate_and_comment()
-            await asyncio.sleep(1)  # Add a delay between API calls
-
-        # Button for generating system diagrams
-        if st.button("Generate System Diagrams"):
-            st.button("Generate System Diagrams")
-            generate_system_diagrams()
-            await asyncio.sleep(1)  # Add a delay between API calls
 
 if __name__ == "__main__":
     asyncio.run(main())
