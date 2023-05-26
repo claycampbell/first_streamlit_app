@@ -87,6 +87,11 @@ if st.button("Generate User Stories"):
 
 llm = ChatOpenAI(model_name="gpt-3.5-turbo")
 
+if 'history' not in st.session_state:
+    st.session_state['history'] = []
+
+st.title("PDFChat:")
+
 if 'ready' not in st.session_state:
     st.session_state['ready'] = False
 
