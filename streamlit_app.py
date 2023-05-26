@@ -43,8 +43,39 @@ async def main():
 
     def generate_user_stories():
         prompt = {"question": "Take this document and turn it into user stories that I can give my engineering team to begin development.", "chat_history": st.session_state['history']}
-        qa(prompt)
-        return
+        output = qa(prompt)
+        st.session_state['history'].append(("Generate User Stories", output["answer"]))
+        return output["answer"]
+
+    def summarize_document():
+        prompt = {"question": "Please provide a summary of the document.", "chat_history": st.session_state['history']}
+        output = qa(prompt)
+        st.session_state['history'].append(("Summarize Document", output["answer"]))
+        return output["answer"]
+
+    def extract_key_topics():
+        prompt = {"question": "What are the key topics covered in this document?", "chat_history": st.session_state['history']}
+        output = qa(prompt)
+        st.session_state['history'].append(("Extract Key Topics", output["answer"]))
+        return output["answer"]
+
+    def identify_stakeholders():
+        prompt = {"question": "Who are the stakeholders mentioned in the document?", "chat_history": st.session_state['history']}
+        output = qa(prompt)
+        st.session_state['history'].append(("Identify Stakeholders", output["answer"]))
+        return output["answer"]
+
+    def create_feature_list():
+        prompt = {"question": "Based on the document, what are the features that should be included?", "chat_history": st.session_state['history']}
+        output = qa(prompt)
+        st.session_state['history'].append(("Create Feature List", output["answer"]))
+        return output["answer"]
+
+    def generate_use_cases():
+        prompt = {"question": "Generate use cases based on the document.", "chat_history": st.session_state['history']}
+        output = qa(prompt)
+        st.session_state['history'].append(("Generate Use Cases", output["answer"]))
+        return output["answer"]
 
     llm = ChatOpenAI(model_name="gpt-3.5-turbo")
 
@@ -97,24 +128,19 @@ async def main():
             generate_user_stories()
 
         if st.button("Summarize Document", key='summarize_document'):
-            # Add logic for summarizing the document here
-            pass
+            summarize_document()
 
         if st.button("Extract Key Topics", key='extract_key_topics'):
-            # Add logic for extracting key topics from the document here
-            pass
+            extract_key_topics()
 
         if st.button("Identify Stakeholders", key='identify_stakeholders'):
-            # Add logic for identifying stakeholders from the document here
-            pass
+            identify_stakeholders()
 
         if st.button("Create Feature List", key='create_feature_list'):
-            # Add logic for creating a feature list from the document here
-            pass
+            create_feature_list()
 
         if st.button("Generate Use Cases", key='generate_use_cases'):
-            # Add logic for generating use cases from the document here
-            pass
+            generate_use_cases()
 
 if __name__ == "__main__":
     asyncio.run(main())
