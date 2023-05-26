@@ -10,6 +10,10 @@ import streamlit as st
 from streamlit_chat import message
 import io
 import asyncio
+import pickle
+
+# Rest of your code...
+
 
 load_dotenv()
 api_key = os.getenv('OPENAI_API_KEY')
