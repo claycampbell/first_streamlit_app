@@ -17,130 +17,125 @@ import asyncio
 load_dotenv()
 api_key = os.getenv('OPENAI_API_KEY')
 
-async def main():
+def store_doc_embeddings(file, filename):
+    reader = PdfReader(file)
+    corpus = ''.join([p.extract_text() for p in reader.pages if p.extract_text()])
+    splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+    chunks = splitter.split_text(corpus)
+    embeddings = OpenAIEmbeddings(openai_api_key=api_key)
+    vectors = FAISS.from_texts(chunks, embeddings)
+    with open(filename + ".pkl", "wb") as f:
+        pickle.dump(vectors, f)
 
-    async def storeDocEmbeds(file, filename):
-        reader = PdfReader(file)
-        corpus = ''.join([p.extract_text() for p in reader.pages if p.extract_text()])
-        splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
-        chunks = splitter.split_text(corpus)
-        embeddings = OpenAIEmbeddings(openai_api_key=api_key)
-        vectors = FAISS.from_texts(chunks, embeddings)
-        with open(filename + ".pkl", "wb") as f:
-            pickle.dump(vectors, f)
+def get_doc_embeddings(file, filename):
+    if not os.path.isfile(filename + ".pkl"):
+        store_doc_embeddings(file, filename)
+    with open(filename + ".pkl", "rb") as f:
+        vectors = pickle.load(f)
+    return vectors
 
-    async def getDocEmbeds(file, filename):
-        if not os.path.isfile(filename + ".pkl"):
-            await storeDocEmbeds(file, filename)
-        with open(filename + ".pkl", "rb") as f:
-            vectors = pickle.load(f)
-        return vectors
+def conversational_chat(query):
+    result = qa({"question": query, "chat_history": st.session_state['history']})
+    st.session_state['history'].append((query, result["answer"]))
+    return result["answer"]
 
-    async def conversational_chat(query):
-        result = qa({"question": query, "chat_history": st.session_state['history']})
-        st.session_state['history'].append((query, result["answer"]))
-        return result["answer"]
+def generate_user_stories():
+    prompt = "Take this document and turn it into user stories that I can give my engineering team to begin development."
+    output = conversational_chat(prompt)
+    st.session_state['history'].append(("Generate User Stories", output))
+    return output
 
-    def generate_user_stories():
-        prompt = "Take this document and turn it into user stories that I can give my engineering team to begin development."
-        output = await conversational_chat(prompt)
-        st.session_state['history'].append(("Generate User Stories", output))
-        return output
+def summarize_document():
+    prompt = "Please provide a summary of the document."
+    output = conversational_chat(prompt)
+    st.session_state['history'].append(("Summarize Document", output))
+    return output
 
-    def summarize_document():
-        prompt = "Please provide a summary of the document."
-        output = await conversational_chat(prompt)
-        st.session_state['history'].append(("Summarize Document", output))
-        return output
+def extract_key_topics():
+    prompt = "What are the key topics covered in this document?"
+    output = conversational_chat(prompt)
+    st.session_state['history'].append(("Extract Key Topics", output))
+    return output
 
-    def extract_key_topics():
-        prompt = "What are the key topics covered in this document?"
-        output = await conversational_chat(prompt)
-        st.session_state['history'].append(("Extract Key Topics", output))
-        return output
+def identify_stakeholders():
+    prompt = "Who are the stakeholders mentioned in the document?"
+    output = conversational_chat(prompt)
+    st.session_state['history'].append(("Identify Stakeholders", output))
+    return output
 
-    def identify_stakeholders():
-        prompt = "Who are the stakeholders mentioned in the document?"
-        output = await conversational_chat(prompt)
-        st.session_state['history'].append(("Identify Stakeholders", output))
-        return output
+def create_feature_list():
+    prompt = "Based on the document, what are the features that should be included?"
+    output = conversational_chat(prompt)
+    st.session_state['history'].append(("Create Feature List", output))
+    return output
 
-    def create_feature_list():
-        prompt = "Based on the document, what are the features that should be included?"
-        output = await conversational_chat(prompt)
-        st.session_state['history'].append(("Create Feature List", output))
-        return output
+def generate_use_cases():
+    prompt = "Generate use cases based on the document."
+    output = conversational_chat(prompt)
+    st.session_state['history'].append(("Generate Use Cases", output))
+    return output
 
-    def generate_use_cases():
-        prompt = "Generate use cases based on the document."
-        output = await conversational_chat(prompt)
-        st.session_state['history'].append(("Generate Use Cases", output))
-        return output
+llm = ChatOpenAI(model_name="gpt-3.5-turbo")
 
-    llm = ChatOpenAI(model_name="gpt-3.5-turbo")
+if 'history' not in st.session_state:
+    st.session_state['history'] = []
 
-    if 'history' not in st.session_state:
-        st.session_state['history'] = []
+st.title("PDFChat:")
 
-    st.title("PDFChat:")
+if 'ready' not in st.session_state:
+    st.session_state['ready'] = False
 
-    if 'ready' not in st.session_state:
-        st.session_state['ready'] = False
+uploaded_file = st.file_uploader("Choose a PDF file", type="pdf")
 
-    uploaded_file = st.file_uploader("Choose a PDF file", type="pdf")
+if uploaded_file is not None:
+    with st.spinner("Processing..."):
+        uploaded_file.seek(0)
+        file = uploaded_file.read()
+        vectors = get_doc_embeddings(io.BytesIO(file), uploaded_file.name)
+        qa = ConversationalRetrievalChain.from_llm(llm, retriever=vectors.as_retriever(), return_source_documents=True)
+    st.session_state['ready'] = True
 
-    if uploaded_file is not None:
-        with st.spinner("Processing..."):
-            uploaded_file.seek(0)
-            file = uploaded_file.read()
-            vectors = await getDocEmbeds(io.BytesIO(file), uploaded_file.name)
-            qa = ConversationalRetrievalChain.from_llm(llm, retriever=vectors.as_retriever(), return_source_documents=True)
-        st.session_state['ready'] = True
+st.divider()
 
-    st.divider()
+if st.session_state['ready']:
+    if 'generated' not in st.session_state:
+        st.session_state['generated'] = ["Welcome! You can now ask any questions regarding " + uploaded_file.name]
+    if 'past' not in st.session_state:
+        st.session_state['past'] = ["Hey!"]
 
-    if st.session_state['ready']:
-        if 'generated' not in st.session_state:
-            st.session_state['generated'] = ["Welcome! You can now ask any questions regarding " + uploaded_file.name]
-        if 'past' not in st.session_state:
-            st.session_state['past'] = ["Hey!"]
+    response_container = st.container()
+    container = st.container()
 
-        response_container = st.container()
-        container = st.container()
+    with container:
+        with st.form(key='my_form', clear_on_submit=True):
+            user_input = st.text_input("Query:", placeholder="e.g: Summarize the paper in a few sentences", key='input')
+            submit_button = st.form_submit_button(label='Send')
 
-        with container:
-            with st.form(key='my_form', clear_on_submit=True):
-                user_input = st.text_input("Query:", placeholder="e.g: Summarize the paper in a few sentences", key='input')
-                submit_button = st.form_submit_button(label='Send')
+        if submit_button and user_input:
+            output = conversational_chat(user_input)
+            st.session_state['past'].append(user_input)
+            st.session_state['generated'].append(output)
 
-            if submit_button and user_input:
-                output = await conversational_chat(user_input)
-                st.session_state['past'].append(user_input)
-                st.session_state['generated'].append(output)
+    if st.session_state['generated']:
+        with response_container:
+            for i in range(len(st.session_state['generated'])):
+                message(st.session_state["past"][i], is_user=True, key=str(i) + '_user', avatar_style="thumbs")
+                message(st.session_state["generated"][i], key=str(i), avatar_style="fun-emoji")
 
-        if st.session_state['generated']:
-            with response_container:
-                for i in range(len(st.session_state['generated'])):
-                    message(st.session_state["past"][i], is_user=True, key=str(i) + '_user', avatar_style="thumbs")
-                    message(st.session_state["generated"][i], key=str(i), avatar_style="fun-emoji")
+    if st.button("Generate User Stories"):
+        generate_user_stories()
 
-        if st.button("Generate User Stories"):
-            generate_user_stories()
+    if st.button("Summarize Document"):
+        summarize_document()
 
-        if st.button("Summarize Document"):
-            summarize_document()
+    if st.button("Extract Key Topics"):
+        extract_key_topics()
 
-        if st.button("Extract Key Topics"):
-            extract_key_topics()
+    if st.button("Identify Stakeholders"):
+        identify_stakeholders()
 
-        if st.button("Identify Stakeholders"):
-            identify_stakeholders()
+    if st.button("Create Feature List"):
+        create_feature_list()
 
-        if st.button("Create Feature List"):
-            create_feature_list()
-
-        if st.button("Generate Use Cases"):
-            generate_use_cases()
-
-if __name__ == "__main__":
-    asyncio.run(main())
+    if st.button("Generate Use Cases"):
+        generate_use_cases()
