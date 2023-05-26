@@ -2,11 +2,7 @@ from PyPDF2 import PdfReader
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.vectorstores import FAISS
-from langchain.chains.question_answering import load_qa_chain
 from langchain.chat_models import ChatOpenAI
-from langchain.chains import ConversationalRetrievalChain
-from langchain.chains.conversational_retrieval import ConversationalRetrieval
-import pickle
 from pathlib import Path
 from dotenv import load_dotenv
 import os
@@ -36,19 +32,22 @@ def get_doc_embeddings(file, filename):
     return vectors
 
 async def conversational_chat(query):
-    result = await qa({"question": query, "chat_history": st.session_state['history']})
-    st.session_state['history'].append((query, result["answer"]))
-    return result["answer"]
+    result = await chat_model.ask(query)
+    st.session_state['history'].append((query, result))
+    return result
 
 def display_output(output):
     st.session_state['generated'].append(output)
     with response_container:
         message(output, key=str(len(st.session_state['generated']) - 1), avatar_style="fun-emoji")
 
-def generate_user_stories():
-    prompt = {"question": "Take this document and turn it into user stories that I can give my engineering team to begin development.", "chat_history": st.session_state['history']}
-    result = asyncio.run(qa(prompt))
-    display_output(result["answer"])
+async def generate_user_stories():
+    prompt = "Take this document and turn it into user stories that I can give my engineering team to begin development."
+    result = await conversational_chat(prompt)
+    display_output(result)
+
+# Load the OpenAI chat model
+chat_model = ChatOpenAI(model_name="gpt-3.5-turbo")
 
 # Create the Streamlit app
 st.title("Business Analyst AI Agent")
