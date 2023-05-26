@@ -42,14 +42,9 @@ async def main():
         return result["answer"]
 
     def generate_user_stories():
-        stories = []
-        for i in range(1, len(st.session_state['generated'])):  # Skip the first element
-            story = {
-                "user_input": st.session_state['past'][i],
-                "generated_output": st.session_state['generated'][i]
-                }
-            stories.append(story)
-        return stories
+        prompt = "Take this document and turn it into user stories that I can give my engineering team to begin development."
+        qa(prompt)
+        return
 
     llm = ChatOpenAI(model_name="gpt-3.5-turbo")
 
@@ -99,12 +94,7 @@ async def main():
                     message(st.session_state["generated"][i], key=str(i), avatar_style="fun-emoji")
 
         if st.button("Generate User Stories"):
-            stories = generate_user_stories()
-            st.write("User Stories:")
-            for i, story in enumerate(stories, 1):
-                st.write(f"{i}. User Input: {story['user_input']}")
-                st.write(f"   Generated Output: {story['generated_output']}")
-                st.write("")
+            generate_user_stories()
 
 if __name__ == "__main__":
     asyncio.run(main())
