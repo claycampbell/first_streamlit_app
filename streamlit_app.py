@@ -96,5 +96,25 @@ async def main():
         if st.button("Generate User Stories", key='generate_user_stories'):
             generate_user_stories()
 
+        if st.button("Summarize Document", key='summarize_document'):
+            # Add logic for summarizing the document here
+            pass
+
+        if st.button("Extract Key Topics", key='extract_key_topics'):
+            # Add logic for extracting key topics from the document here
+            pass
+
+        if st.button("Identify Stakeholders", key='identify_stakeholders'):
+            # Add logic for identifying stakeholders from the document here
+            pass
+
+        if st.button("Create Feature List", key='create_feature_list'):
+            # Add logic for creating a feature list from the document here
+            pass
+
+        if st.button("Generate Use Cases", key='generate_use_cases'):
+            # Add logic for generating use cases from the document here
+            pass
+
 if __name__ == "__main__":
     asyncio.run(main())
