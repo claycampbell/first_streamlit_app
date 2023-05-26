@@ -41,15 +41,16 @@ async def main():
         st.session_state['history'].append((query, result["answer"]))
         return result["answer"]
 
-    def generate_user_stories():
-        stories = []
-        for i in range(len(st.session_state['generated'])):
-            story = {
-                "user_input": st.session_state['past'][i],
-                "generated_output": st.session_state['generated'][i]
-            }
-            stories.append(story)
-        return stories
+  def generate_user_stories():
+    stories = []
+    for i in range(1, len(st.session_state['generated'])):  # Skip the first element
+        story = {
+            "user_input": st.session_state['past'][i],
+            "generated_output": st.session_state['generated'][i]
+        }
+        stories.append(story)
+    return stories
+
 
     llm = ChatOpenAI(model_name="gpt-3.5-turbo")
 
