@@ -15,7 +15,7 @@ import io
 import asyncio
 
 load_dotenv()
-api_key = os.getenv('OPENAI_API_KEY')  
+api_key = os.getenv('OPENAI_API_KEY')
 
 async def main():
 
@@ -40,6 +40,16 @@ async def main():
         result = qa({"question": query, "chat_history": st.session_state['history']})
         st.session_state['history'].append((query, result["answer"]))
         return result["answer"]
+
+    def generate_user_stories():
+        stories = []
+        for i in range(len(st.session_state['generated'])):
+            story = {
+                "user_input": st.session_state['past'][i],
+                "generated_output": st.session_state['generated'][i]
+            }
+            stories.append(story)
+        return stories
 
     llm = ChatOpenAI(model_name="gpt-3.5-turbo")
 
@@ -85,9 +95,16 @@ async def main():
         if st.session_state['generated']:
             with response_container:
                 for i in range(len(st.session_state['generated'])):
-                    if i < len(st.session_state['past']):
-                        message(st.session_state["past"][i], is_user=True, key=str(i) + '_user', avatar_style="thumbs")
+                    message(st.session_state["past"][i], is_user=True, key=str(i) + '_user', avatar_style="thumbs")
                     message(st.session_state["generated"][i], key=str(i), avatar_style="fun-emoji")
+
+        if st.button("Generate User Stories"):
+            stories = generate_user_stories()
+            st.write("User Stories:")
+            for i, story in enumerate(stories, 1):
+                st.write(f"{i}. User Input: {story['user_input']}")
+                st.write(f"   Generated Output: {story['generated_output']}")
+                st.write("")
 
 if __name__ == "__main__":
     asyncio.run(main())
