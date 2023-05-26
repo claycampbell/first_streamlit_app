@@ -44,9 +44,19 @@ def display_output(output):
     with response_container:
         message(output, key=str(len(st.session_state['generated']) - 1), avatar_style="fun-emoji")
 
-async def generate_user_stories():
+async def conversational_chat(query):
+    result = await qa({"question": query, "chat_history": st.session_state['history']})
+    st.session_state['history'].append((query, result["answer"]))
+    return result["answer"]
+
+def display_output(output):
+    st.session_state['generated'].append(output)
+    with response_container:
+        message(output, key=str(len(st.session_state['generated']) - 1), avatar_style="fun-emoji")
+
+def generate_user_stories():
     prompt = {"question": "Take this document and turn it into user stories that I can give my engineering team to begin development.", "chat_history": st.session_state['history']}
-    result = await qa(prompt)
+    result = asyncio.run(qa(prompt))
     display_output(result["answer"])
 
 async def summarize_document():
@@ -78,9 +88,6 @@ async def generate_use_cases():
     output = await conversational_chat(prompt)
     st.session_state['history'].append(("Generate Use Cases", output))
     return output
-
-if st.button("Generate User Stories"):
-    await generate_user_stories()
 
 llm = ChatOpenAI(model_name="gpt-3.5-turbo")
 
