@@ -1,3 +1,4 @@
+from PyPDF2 import PdfReader
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.vectorstores import FAISS
@@ -12,13 +13,17 @@ import streamlit as st
 from streamlit_chat import message
 import io
 import asyncio
+import openai
 
 load_dotenv()
 api_key = os.getenv('OPENAI_API_KEY')
 
+openai.api_key = api_key
+
 async def main():
     async def storeDocEmbeds(file, filename):
-        corpus = file.read().decode("utf-8")
+        reader = PdfReader(file)
+        corpus = ''.join([p.extract_text() for p in reader.pages if p.extract_text()])
 
         splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
         chunks = splitter.split_text(corpus)
@@ -38,7 +43,7 @@ async def main():
 
         return vectors
 
-    async def conversational_chat(query, vectors):
+    async def conversational_chat(query):
         result = qa({"question": query, "chat_history": st.session_state['history']})
         st.session_state['history'].append((query, result["answer"]))
         return result["answer"]
@@ -50,30 +55,21 @@ async def main():
         st.session_state['history'] = []
 
     # Creating the chatbot interface
-    st.title("Document Chat")
+    st.title("PDFChat :")
 
     if 'ready' not in st.session_state:
         st.session_state['ready'] = False
 
-    uploaded_file = st.file_uploader("Choose a file", type=["pdf", "docx", "txt"])
+    uploaded_file = st.file_uploader("Choose a file", type="pdf")
 
     if uploaded_file is not None:
         with st.spinner("Processing..."):
             uploaded_file.seek(0)
             file = uploaded_file.read()
-
-            if uploaded_file.type == "pdf":
-                vectors = await getDocEmbeds(io.BytesIO(file), uploaded_file.name)
-            elif uploaded_file.type == "docx":
-                vectors = await getDocEmbeds(io.BytesIO(file), uploaded_file.name)
-            elif uploaded_file.type == "txt":
-                vectors = await getDocEmbeds(io.BytesIO(file), uploaded_file.name)
-
-            qa = ConversationalRetrievalChain.from_llm(
-                ChatOpenAI(model_name="gpt-3.5-turbo"),
-                retriever=vectors.as_retriever(),
-                return_source_documents=True
-            )
+            vectors = await getDocEmbeds(io.BytesIO(file), uploaded_file.name)
+            qa = ConversationalRetrievalChain.from_llm(ChatOpenAI(model_name="gpt-3.5-turbo"),
+                                                      retriever=vectors.as_retriever(),
+                                                      return_source_documents=True)
 
         st.session_state['ready'] = True
 
@@ -90,12 +86,22 @@ async def main():
         response_container = st.container()
 
         # Container for text box
-        with st.form(key='my_form', clear_on_submit=True):
-            user_input = st.text_input("Query:", placeholder="e.g: Summarize the document in a few sentences", key='input')
-            submit_button = st.form_submit_button(label='Send')
+        container = st.container()
 
-            if submit_button and user_input:
-                output = await conversational_chat(user_input, vectors)
+        with container:
+            with st.form(key='my_form', clear_on_submit=True):
+                user_input = st.text_input("Query:",
+                                           placeholder="e.g: Summarize the paper in a few sentences",
+                                           key='input')
+                generate_button = st.form_submit_button("Generate User Stories")
+
+            if generate_button:
+                user_stories = await generate_user_stories()
+                for story in user_stories:
+                    st.session_state['generated'].append(story)
+
+            if user_input and not generate_button:
+                output = await conversational_chat(user_input)
                 st.session_state['past'].append(user_input)
                 st.session_state['generated'].append(output)
 
@@ -105,6 +111,25 @@ async def main():
                     message(st.session_state["past"][i], is_user=True, key=str(i) + '_user', avatar_style="thumbs")
                     message(st.session_state["generated"][i], key=str(i), avatar_style="fun-emoji")
 
+async def generate_user_stories():
+    user_stories = []
+
+    prompt = "Generate user stories based on the provided document."
+
+    response = await openai.Completion.create(
+        engine="text-davinci-003",
+        prompt=prompt,
+        max_tokens=100,
+        n=5,  # Number of user stories to generate
+        stop=None,  # Custom stop conditions if needed
+        temperature=0.7,
+    )
+
+    for choice in response.choices:
+        user_story = choice.text.strip()
+        user_stories.append(user_story)
+
+    return user_stories
 
 if __name__ == "__main__":
     asyncio.run(main())
