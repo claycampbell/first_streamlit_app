@@ -79,32 +79,27 @@ async def main():
 
     st.divider()
 
-if st.session_state['ready']:
-    if 'generated' not in st.session_state:
-        st.session_state['generated'] = ["Welcome! You can now ask any questions regarding " + uploaded_file.name]
+    if st.session_state.get('ready', False):
+        if 'generated' not in st.session_state:
+            st.session_state['generated'] = ["Welcome! You can now ask any questions regarding " + uploaded_file.name]
 
-    if 'past' not in st.session_state:
-        st.session_state['past'] = ["Hey!"]
+        if 'past' not in st.session_state:
+            st.session_state['past'] = ["Hey!"]
 
-    # Container for chat history
-    response_container = st.container()
+        # Container for chat history
+        response_container = st.container()
 
-    # Container for text box
-    with st.form(key='my_form', clear_on_submit=True):
-        user_input = st.text_input("Query:", placeholder="e.g: Summarize the document in a few sentences", key='input')
-        submit_button = st.form_submit_button(label='Send')
+        # Container for text box
+        with st.form(key='my_form', clear_on_submit=True):
+            user_input = st.text_input("Query:", placeholder="e.g: Summarize the document in a few sentences", key='input')
+            submit_button = st.form_submit_button(label='Send')
 
-if submit_button and user_input:
-    loop = asyncio.new_event_loop()
-    output = loop.run_until_complete(conversational_chat(user_input))
-    loop.close()
+        if submit_button and user_input:
+            output = await conversational_chat(user_input)
+            st.session_state['past'].append(user_input)
+            st.session_state['generated'].append(output)
 
-    st.session_state['past'].append(user_input)
-    st.session_state['generated'].append(output)
-
-
-
-    if st.session_state['generated']:
+    if st.session_state.get('generated', []):
         with response_container:
             for i in range(len(st.session_state['generated'])):
                 message(st.session_state["past"][i], is_user=True, key=str(i) + '_user', avatar_style="thumbs")
@@ -114,3 +109,4 @@ if submit_button and user_input:
 if __name__ == "__main__":
     asyncio.run(main())
 
+                     
