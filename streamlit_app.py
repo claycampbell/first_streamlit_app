@@ -46,6 +46,7 @@ async def main():
     llm = ChatOpenAI(model_name="gpt-3.5-turbo")
     chain = load_qa_chain(llm, chain_type="stuff")
     qa = None  # Initialize the qa variable
+    vectors = None  # Initialize the vectors variable
 
     if 'history' not in st.session_state:
         st.session_state['history'] = []
@@ -96,10 +97,7 @@ async def main():
             submit_button = st.form_submit_button(label='Send')
 
             if submit_button and user_input:
-                loop = asyncio.new_event_loop()
                 output = await conversational_chat(qa, user_input)
-                loop.close()
-
                 st.session_state['past'].append(user_input)
                 st.session_state['generated'].append(output)
 
