@@ -34,16 +34,24 @@ def get_doc_embeddings(file, filename):
         vectors = pickle.load(f)
     return vectors
 
-def conversational_chat(query):
-    result = qa({"question": query, "chat_history": st.session_state['history']})
+async def conversational_chat(query):
+    result = await qa({"question": query, "chat_history": st.session_state['history']})
     st.session_state['history'].append((query, result["answer"]))
     return result["answer"]
 
+def display_output(output):
+    st.session_state['generated'].append(output)
+    with response_container:
+        message(output, key=str(len(st.session_state['generated']) - 1), avatar_style="fun-emoji")
+
 def generate_user_stories():
-    prompt = "Take this document and turn it into user stories that I can give my engineering team to begin development."
-    output = conversational_chat(prompt)
-    st.session_state['history'].append(("Generate User Stories", output))
-    return output
+    prompt = {"question": "Take this document and turn it into user stories that I can give my engineering team to begin development.", "chat_history": st.session_state['history']}
+    result = await qa(prompt)
+    display_output(result["answer"])
+
+if st.button("Generate User Stories"):
+    await generate_user_stories()
+
 
 def summarize_document():
     prompt = "Please provide a summary of the document."
