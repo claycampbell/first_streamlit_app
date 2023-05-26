@@ -14,8 +14,8 @@ import io
 import asyncio
 
 load_dotenv()
-api_key = os.getenv('OPENAI_API_KEY')  
-vectors = getDocEmbeds("gpt4.pdf")
+api_key = os.getenv('OPENAI_API_KEY')
+
 async def main():
     async def storeDocEmbeds(file, filename):
         corpus = file.read().decode("utf-8")
@@ -38,15 +38,13 @@ async def main():
 
         return vectors
 
-    async def conversational_chat(qa, query):
+    async def conversational_chat(query):
         result = qa({"question": query, "chat_history": st.session_state['history']})
         st.session_state['history'].append((query, result["answer"]))
         return result["answer"]
 
     llm = ChatOpenAI(model_name="gpt-3.5-turbo")
     chain = load_qa_chain(llm, chain_type="stuff")
-    qa = None  # Initialize the qa variable
-    vectors = None  # Initialize the vectors variable
 
     if 'history' not in st.session_state:
         st.session_state['history'] = []
@@ -67,13 +65,15 @@ async def main():
             if uploaded_file.type == "pdf":
                 vectors = await getDocEmbeds(io.BytesIO(file), uploaded_file.name)
             elif uploaded_file.type == "docx":
-                vectors = await getDocEmbeds(io.BytesIO(file), uploaded_file.name)
+                # Convert DOCX to text
+                text = convert_docx_to_text(io.BytesIO(file))
+                vectors = await getDocEmbeds(io.BytesIO(text.encode("utf-8")), uploaded_file.name)
             elif uploaded_file.type == "txt":
                 vectors = await getDocEmbeds(io.BytesIO(file), uploaded_file.name)
 
             qa = ConversationalRetrievalChain.from_llm(
                 ChatOpenAI(model_name="gpt-3.5-turbo"),
-                retriever=vectors.as_retriever(),
+                retriever=vectors,
                 return_source_documents=True
             )
 
@@ -96,10 +96,13 @@ async def main():
             user_input = st.text_input("Query:", placeholder="e.g: Summarize the document in a few sentences", key='input')
             submit_button = st.form_submit_button(label='Send')
 
-            if submit_button and user_input:
-                output = await conversational_chat(qa, user_input)
-                st.session_state['past'].append(user_input)
-                st.session_state['generated'].append(output)
+        if submit_button and user_input:
+            loop = asyncio.new_event_loop()
+            output = loop.run_until_complete(conversational_chat(user_input))
+            loop.close()
+
+            st.session_state['past'].append(user_input)
+            st.session_state['generated'].append(output)
 
         if st.session_state['generated']:
             with response_container:
