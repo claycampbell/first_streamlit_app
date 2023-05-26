@@ -44,7 +44,7 @@ def display_output(output):
     with response_container:
         message(output, key=str(len(st.session_state['generated']) - 1), avatar_style="fun-emoji")
 
-def generate_user_stories():
+async def generate_user_stories():
     prompt = {"question": "Take this document and turn it into user stories that I can give my engineering team to begin development.", "chat_history": st.session_state['history']}
     result = await qa(prompt)
     display_output(result["answer"])
@@ -52,32 +52,31 @@ def generate_user_stories():
 if st.button("Generate User Stories"):
     await generate_user_stories()
 
-
-def summarize_document():
+async def summarize_document():
     prompt = "Please provide a summary of the document."
     output = conversational_chat(prompt)
     st.session_state['history'].append(("Summarize Document", output))
     return output
 
-def extract_key_topics():
+async def extract_key_topics():
     prompt = "What are the key topics covered in this document?"
     output = conversational_chat(prompt)
     st.session_state['history'].append(("Extract Key Topics", output))
     return output
 
-def identify_stakeholders():
+async def identify_stakeholders():
     prompt = "Who are the stakeholders mentioned in the document?"
     output = conversational_chat(prompt)
     st.session_state['history'].append(("Identify Stakeholders", output))
     return output
 
-def create_feature_list():
+async def create_feature_list():
     prompt = "Based on the document, what are the features that should be included?"
     output = conversational_chat(prompt)
     st.session_state['history'].append(("Create Feature List", output))
     return output
 
-def generate_use_cases():
+async def generate_use_cases():
     prompt = "Generate use cases based on the document."
     output = conversational_chat(prompt)
     st.session_state['history'].append(("Generate Use Cases", output))
