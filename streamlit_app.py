@@ -15,7 +15,7 @@ import asyncio
 
 load_dotenv()
 api_key = os.getenv('OPENAI_API_KEY')  
-
+vectors = getDocEmbeds("gpt4.pdf")
 async def main():
     async def storeDocEmbeds(file, filename):
         corpus = file.read().decode("utf-8")
