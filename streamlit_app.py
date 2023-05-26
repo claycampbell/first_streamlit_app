@@ -65,15 +65,13 @@ async def main():
             if uploaded_file.type == "pdf":
                 vectors = await getDocEmbeds(io.BytesIO(file), uploaded_file.name)
             elif uploaded_file.type == "docx":
-                # Convert DOCX to text
-                text = convert_docx_to_text(io.BytesIO(file))
-                vectors = await getDocEmbeds(io.BytesIO(text.encode("utf-8")), uploaded_file.name)
+                vectors = await getDocEmbeds(io.BytesIO(file), uploaded_file.name)
             elif uploaded_file.type == "txt":
                 vectors = await getDocEmbeds(io.BytesIO(file), uploaded_file.name)
 
             qa = ConversationalRetrievalChain.from_llm(
                 ChatOpenAI(model_name="gpt-3.5-turbo"),
-                retriever=vectors,
+                retriever=vectors.as_retriever(),
                 return_source_documents=True
             )
 
@@ -96,10 +94,10 @@ async def main():
             user_input = st.text_input("Query:", placeholder="e.g: Summarize the document in a few sentences", key='input')
             submit_button = st.form_submit_button(label='Send')
 
-        if submit_button and user_input:
-            output = await conversational_chat(user_input, vectors)
-            st.session_state['past'].append(user_input)
-            st.session_state['generated'].append(output)
+            if submit_button and user_input:
+                output = await conversational_chat(user_input, vectors)
+                st.session_state['past'].append(user_input)
+                st.session_state['generated'].append(output)
 
         if st.session_state['generated']:
             with response_container:
