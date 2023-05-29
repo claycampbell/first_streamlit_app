@@ -31,13 +31,19 @@ def generate_responses(file_content, user_role):
 
 
 def main():
+    # Set page title and favicon
+    st.set_page_config(page_title="Snowbotium", page_icon=":snowflake:")
+
+    # Header
     st.title("Snowbotium")
+    st.markdown("Accelerate Your Data Migration Project")
 
-    st.write("Upload a PDF file to get generate project assets and facilitate discussions.")
-
-    uploaded_file = st.file_uploader("Choose a PDF file", type="pdf")
+    # Upload a PDF file
+    st.sidebar.title("Upload PDF")
+    uploaded_file = st.sidebar.file_uploader("Choose a PDF file", type="pdf")
 
     if uploaded_file is not None:
+        # Read the uploaded PDF file
         pdf_reader = PyPDF2.PdfReader(uploaded_file)
         file_content = ""
         for page in pdf_reader.pages:
@@ -50,6 +56,7 @@ def main():
             st.success("Ideas Generated!")
 
             # Display Responses
+            st.subheader("User Story Ideas:")
             for index, response in enumerate(responses, start=1):
                 st.write(f"Idea {index}: {response}")
 
@@ -60,6 +67,7 @@ def main():
             st.success("Benefits Explained!")
 
             # Display Responses
+            st.subheader("Customer Benefits:")
             for index, response in enumerate(responses, start=1):
                 st.write(f"Response {index}: {response}")
 
@@ -70,13 +78,14 @@ def main():
             st.success("Effort Estimated and Risks Identified!")
 
             # Display Responses
+            st.subheader("Effort and Risks:")
             for index, response in enumerate(responses, start=1):
                 st.write(f"Response {index}: {response}")
 
         # Create Project Plan
         if st.button("Create Project Plan"):
             with st.spinner("Creating project plan..."):
-                responses = generate_responses(file_content, "Create a project plan for this Project.")
+                responses = generate_responses(file_content, "Create a project plan for this project.")
             st.success("Project Plan Created!")
 
             # Display Responses
@@ -84,6 +93,9 @@ def main():
             for index, response in enumerate(responses, start=1):
                 st.write(f"Response {index}: {response}")
 
+    # Footer
+    st.sidebar.markdown("---")
+    st.sidebar.markdown("Snowbotium - Powered by Haker AI")
 
 if __name__ == "__main__":
     main()
