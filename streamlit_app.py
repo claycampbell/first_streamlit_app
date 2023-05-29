@@ -54,52 +54,55 @@ async def generate_user_stories():
     result = await conversational_chat(prompt)
     display_output(result)
 
-# Load the OpenAI API key
-openai.api_key = api_key
+def main():
+    # Load the OpenAI API key
+    openai.api_key = api_key
 
-# Create the Streamlit app
-st.title("Business Analyst AI Agent")
+    # Create the Streamlit app
+    st.title("Business Analyst AI Agent")
 
-# Define the response container
-response_container = st.empty()
+    # Define the response container
+    response_container = st.empty()
 
-# Initialize session state if not exists
-if 'history' not in st.session_state:
-    st.session_state['history'] = []
+    # Initialize session state if not exists
+    if 'history' not in st.session_state:
+        st.session_state['history'] = []
 
-if 'generated' not in st.session_state:
-    st.session_state['generated'] = []
+    if 'generated' not in st.session_state:
+        st.session_state['generated'] = []
 
-# Add the buttons
-if st.button("Summarize Document"):
-    summarize_document()
+    # Add the buttons
+    if st.button("Summarize Document"):
+        summarize_document()
 
-if st.button("Extract Key Topics"):
-    extract_key_topics()
+    if st.button("Extract Key Topics"):
+        extract_key_topics()
 
-if st.button("Identify Stakeholders"):
-    identify_stakeholders()
+    if st.button("Identify Stakeholders"):
+        identify_stakeholders()
 
-if st.button("Create Feature List"):
-    create_feature_list()
+    if st.button("Create Feature List"):
+        create_feature_list()
 
-if st.button("Generate Use Cases"):
-    generate_use_cases()
+    if st.button("Generate Use Cases"):
+        generate_use_cases()
 
-if st.button("Generate User Stories"):
-    asyncio.run(generate_user_stories())
+    if st.button("Generate User Stories"):
+        asyncio.run(generate_user_stories())
 
-# ...
+    # ...
 
-llm = openai
+    llm = openai
 
-# ...
+    # ...
 
-# Replace the usage of ChatOpenAI with OpenAI API
-chat_model = openai
+    # Replace the usage of ChatOpenAI with OpenAI API
+    chat_model = openai
 
-# ...
+    # ...
 
-# Run the Streamlit app
+    # Run the Streamlit app
+
+
 if __name__ == "__main__":
     main()
