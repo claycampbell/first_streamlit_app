@@ -2,6 +2,7 @@ import streamlit as st
 import openai
 import os
 import PyPDF2
+import pandas as pd
 
 # Get the OpenAI API key from environment variables
 api_key = os.getenv('OPENAI_API_KEY')
@@ -47,18 +48,12 @@ def main():
                 responses = generate_responses(file_content, "Generate ideas for user stories.", "")
 
             # Display Ideas
-            for index, response in enumerate(responses, start=1):
+            ideas = []
+            for response in responses:
                 if response.startswith("Idea"):
-                    st.write(f"{response}\n")
-                else:
-                    st.write(response)
-
-                if response.startswith("Idea"):
-                    user_story_button_id = f"user_story_button_{index}"
-                    if st.button("Generate User Story", key=user_story_button_id):
-                        user_story = response.split(": ")[1]
-                        user_story_response = generate_responses(file_content, "Generate user story.", user_story)
-                        st.write(f"User Story: {user_story_response}\n")
+                    ideas.append(response)
+            df_ideas = pd.DataFrame({"Ideas": ideas})
+            st.table(df_ideas)
 
         # Explain Customer Benefits
         if st.button("Explain Customer Benefits"):
@@ -67,8 +62,8 @@ def main():
             st.success("Benefits Explained!")
 
             # Display Responses
-            for index, response in enumerate(responses, start=1):
-                st.write(f"Response {index}: {response}")
+            df_benefits = pd.DataFrame({"Responses": responses})
+            st.table(df_benefits)
 
         # Estimate Effort and Identify Risks
         if st.button("Estimate Effort and Identify Risks"):
@@ -77,8 +72,21 @@ def main():
             st.success("Effort Estimated and Risks Identified!")
 
             # Display Responses
-            for index, response in enumerate(responses, start=1):
-                st.write(f"Response {index}: {response}")
+            df_tasks = pd.DataFrame({"Responses": responses})
+            st.table(df_tasks)
+
+        # Generate User Story
+        if st.button("Generate User Story"):
+            user_story_input = st.text_input("Enter the idea number to generate a user story:", value="")
+            if user_story_input:
+                user_story_index = int(user_story_input) - 1
+                if 0 <= user_story_index < len(responses):
+                    idea = responses[user_story_index]
+                    if idea.startswith("Idea"):
+                        user_story = idea.split(": ")[1]
+                        user_story_response = generate_responses(file_content, "Generate user story.", user_story)
+                        st.write("Generated User Story:")
+                        st.write(user_story_response)
 
 
 if __name__ == "__main__":
