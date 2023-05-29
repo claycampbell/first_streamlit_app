@@ -27,7 +27,8 @@ def generate_responses(file_content, user_role):
     responses = []
     for choice in response.choices:
         response_text = choice.message.content
-        responses.append(response_text)
+        response_columns = response_text.split(",")  # Split response into columns
+        responses.append(response_columns)
     return responses
 
 
@@ -55,8 +56,7 @@ def main():
 
             # Display Responses
             with col2:
-                data = {"Ideas": responses}
-                df = pd.DataFrame(data)
+                df = pd.DataFrame(responses)
                 st.table(df)
 
         # Explain Customer Benefits
@@ -67,8 +67,7 @@ def main():
 
             # Display Responses
             with col2:
-                data = {"Responses": responses}
-                df = pd.DataFrame(data)
+                df = pd.DataFrame(responses)
                 st.table(df)
 
         # Estimate Effort and Identify Risks
@@ -79,8 +78,7 @@ def main():
 
             # Display Responses
             with col2:
-                data = {"Responses": responses}
-                df = pd.DataFrame(data)
+                df = pd.DataFrame(responses)
                 st.table(df)
 
 
