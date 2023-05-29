@@ -55,10 +55,11 @@ def main():
 
             # Display Responses in Table
             with col2:
-                data = {"User Story": responses}
-                df = pd.DataFrame(data)
-                df_expanded = df["User Story"].str.split(".", expand=True).dropna().reset_index(drop=True)
-                st.table(df_expanded)
+                user_stories = []
+                for index, response in enumerate(responses, start=1):
+                    user_stories.append(f"{index}. {response}")
+                df = pd.DataFrame(user_stories, columns=["User Story"])
+                st.table(df)
 
         # Explain Customer Benefits
         if col1.button("Explain Customer Benefits"):
@@ -68,10 +69,11 @@ def main():
 
             # Display Responses in Table
             with col2:
-                data = {"User Story": responses}
-                df = pd.DataFrame(data)
-                df_expanded = df["User Story"].str.split(".", expand=True).dropna().reset_index(drop=True)
-                st.table(df_expanded)
+                user_stories = []
+                for index, response in enumerate(responses, start=1):
+                    user_stories.append(f"{index}. {response}")
+                df = pd.DataFrame(user_stories, columns=["User Story"])
+                st.table(df)
 
         # Estimate Effort and Identify Risks
         if col1.button("Estimate Effort and Identify Risks"):
@@ -81,10 +83,11 @@ def main():
 
             # Display Responses in Table
             with col2:
-                data = {"User Story": responses}
-                df = pd.DataFrame(data)
-                df_expanded = df["User Story"].str.split(".", expand=True).dropna().reset_index(drop=True)
-                st.table(df_expanded)
+                user_stories = []
+                for index, response in enumerate(responses, start=1):
+                    user_stories.append(f"{index}. {response}")
+                df = pd.DataFrame(user_stories, columns=["User Story"])
+                st.table(df)
 
 
 if __name__ == "__main__":
