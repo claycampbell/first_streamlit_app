@@ -8,11 +8,12 @@ api_key = os.getenv('OPENAI_API_KEY')
 openai.api_key = api_key
 
 # Define the conversation with the model
-def generate_user_stories(file_content):
+def generate_user_stories(file_content, user_role):
     conversation = [
         {"role": "system", "content": "You are a helpful assistant."},
         {"role": "user", "content": "Here is a PDF document. Can you analyze it and generate user stories based on its content?"},
-        {"role": "assistant", "content": file_content}
+        {"role": "assistant", "content": file_content},
+        {"role": "user", "content": user_role}
     ]
 
     # Call OpenAI Chat Completion API
@@ -46,12 +47,22 @@ def main():
 
         if st.button("Generate User Stories"):
             with st.spinner("Generating user stories..."):
-                user_stories = generate_user_stories(file_content)
+                user_stories = generate_user_stories(file_content, "What are the acceptance criteria for these user stories?")
 
             st.success("User Stories Generated!")
 
             for index, story in enumerate(user_stories, start=1):
                 st.write(f"User Story {index}: {story}")
+
+        if st.button("Ask Another Question"):
+            question = st.text_input("Enter your question:")
+            if question:
+                with st.spinner("Getting response..."):
+                    user_stories = generate_user_stories(file_content, question)
+                st.success("Response Generated!")
+
+                for index, story in enumerate(user_stories, start=1):
+                    st.write(f"Response {index}: {story}")
 
 
 if __name__ == "__main__":
