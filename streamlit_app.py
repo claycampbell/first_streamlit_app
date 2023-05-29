@@ -1,31 +1,50 @@
 import streamlit as st
-from flow_coordinator import run
+import openai
+import os
+
+# Get the OpenAI API key from environment variables
+api_key = os.getenv('OPENAI_API_KEY')
+openai.api_key = api_key
 
 
+# Define the conversation with the model
+def generate_user_stories(file_content):
+    conversation = [
+        {"role": "system", "content": "You are a helpful assistant."},
+        {"role": "user", "content": "Here is a PDF document. Can you analyze it and generate user stories based on its content?"},
+        {"role": "assistant", "content": file_content}
+    ]
+
+    # Call OpenAI Chat Completion API
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=conversation,
+    )
+
+    # Extract the user stories from the model's response
+    user_stories = [message["content"] for message in response["choices"][0]["message"]["content"] if message["role"] == "assistant"]
+    return user_stories
 
 
 def main():
-    """
-    Main function to run the Streamlit interface and execute the run function from file_processor.
-    This file follows the dependency inversion principle, and separates UI from backend functionalities:
-    Streamlit framework is used to render the GUI and manage file uploads.
-    To use other approaches or frameworks: 
-    1) Make sure to set up a GUI that allows users to upload files & enter text input for their questions.
-    2) Import the run method from the flow_coordinator.py
-    3) Get the response by running the run(files, user_question) method with the appropriate arguments. 
+    st.title("PDF User Stories Generator")
 
-    
-    """
+    st.write("Upload a PDF file to generate user stories.")
 
-    st.set_page_config(page_title="Talk With Your Files")  # can add parameters to style the page
-    st.header("Talk With Your Files")
+    uploaded_file = st.file_uploader("Choose a PDF file", type="pdf")
 
-    files = st.file_uploader("Upload files", type=["pdf", "docx", "txt","csv"], accept_multiple_files=True)
-    user_question = st.text_input("Please ask me about your uploaded files and I shall help you: ")
+    if uploaded_file is not None:
+        file_content = uploaded_file.read().decode("utf-8")
 
-    if user_question and files:
-        response = run(files, user_question)
-        st.write(response)
+        if st.button("Generate User Stories"):
+            with st.spinner("Generating user stories..."):
+                user_stories = generate_user_stories(file_content)
 
-if __name__ == '__main__':
+            st.success("User Stories Generated!")
+
+            for index, story in enumerate(user_stories, start=1):
+                st.write(f"User Story {index}: {story}")
+
+
+if __name__ == "__main__":
     main()
