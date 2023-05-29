@@ -33,7 +33,7 @@ def get_doc_embeddings(file, filename):
     return vectors
 
 async def conversational_chat(query):
-    result = await chat_model.ask(query)
+    result = await chat_model.generate(query)
     st.session_state['history'].append((query, result))
     return result
 
