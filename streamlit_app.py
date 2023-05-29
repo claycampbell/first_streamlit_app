@@ -8,12 +8,13 @@ api_key = os.getenv('OPENAI_API_KEY')
 openai.api_key = api_key
 
 # Define the conversation with the model
-def generate_responses(file_content, user_role):
+def generate_responses(file_content, user_role, user_story):
     conversation = [
         {"role": "system", "content": "You are a technical business analyst."},
         {"role": "user", "content": "Here is a PDF document. Can you analyze it and provide information based on its content?"},
         {"role": "assistant", "content": file_content},
-        {"role": "user", "content": user_role}
+        {"role": "user", "content": user_role},
+        {"role": "assistant", "content": user_story}
     ]
 
     # Call OpenAI Chat Completion API
@@ -22,12 +23,9 @@ def generate_responses(file_content, user_role):
         messages=conversation,
     )
 
-    # Extract the responses from the model's output
-    responses = []
-    for choice in response.choices:
-        response_text = choice.message.content
-        responses.append(response_text)
-    return responses
+    # Extract the response from the model's output
+    user_story_response = response.choices[0].message.content
+    return user_story_response
 
 
 def main():
@@ -49,8 +47,7 @@ def main():
         # Generate Ideas for User Stories
         if col1.button("Generate Ideas for User Stories"):
             with st.spinner("Generating ideas..."):
-                responses = generate_responses(file_content, "Generate ideas for user stories.")
-            st.success("Ideas Generated!")
+                responses = generate_responses(file_content, "Generate ideas for user stories.", "")
 
             # Display Ideas
             with col2:
@@ -63,15 +60,14 @@ def main():
                     if response.startswith("Idea"):
                         user_story_button_id = f"user_story_button_{index}"
                         if st.button("Generate User Story", key=user_story_button_id):
-                            user_story_responses = generate_responses(file_content, "Generate user story.")
-                            for user_story_response in user_story_responses:
-                                if not user_story_response.startswith("Idea"):
-                                    st.write(f"User Story: {user_story_response}\n")
+                            user_story = response.split(": ")[1]
+                            user_story_response = generate_responses(file_content, "Generate user story.", user_story)
+                            st.write(f"User Story: {user_story_response}\n")
 
         # Explain Customer Benefits
         if col1.button("Explain Customer Benefits"):
             with st.spinner("Explaining Benefits..."):
-                responses = generate_responses(file_content, "What are the main benefits of this project for the customer?")
+                responses = generate_responses(file_content, "What are the main benefits of this project for the customer?", "")
             st.success("Benefits Explained!")
 
             # Display Responses
@@ -82,7 +78,7 @@ def main():
         # Estimate Effort and Identify Risks
         if col1.button("Estimate Effort and Identify Risks"):
             with st.spinner("Estimating effort and identifying risks..."):
-                responses = generate_responses(file_content, "What are the main tasks required to complete this project?")
+                responses = generate_responses(file_content, "What are the main tasks required to complete this project?", "")
             st.success("Effort Estimated and Risks Identified!")
 
             # Display Responses
