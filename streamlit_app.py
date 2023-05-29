@@ -43,32 +43,30 @@ def main():
         for page in pdf_reader.pages:
             file_content += page.extract_text()
 
-        option = st.selectbox("Select an option:", ("Generate Ideas for User Stories", "Facilitate Team Discussions", "Estimate Effort and Identify Risks"))
+        if st.button("Generate Ideas for User Stories"):
+            with st.spinner("Generating ideas..."):
+                responses = generate_responses(file_content, "Generate ideas for user stories.")
+            st.success("Ideas Generated!")
 
-        if option == "Generate Ideas for User Stories":
-            user_role = st.text_input("Enter your role:", "Generate ideas for user stories.", key="user_role_text")
-        elif option == "Facilitate Team Discussions":
-            user_role = st.selectbox("Select a question:", ("What are the main benefits of this feature for the customer?", "What are the key requirements for this feature to be successful?", "What are some potential challenges or limitations of this feature?"), key="user_role_dropdown")
-        elif option == "Estimate Effort and Identify Risks":
-            user_role = st.selectbox("Select a question:", ("What tasks are dependent on the completion of task X?", "Which tasks will be impacted if task Y is delayed?"), key="user_role_dropdown")
-        else:
-            user_role = ""
+            for index, response in enumerate(responses, start=1):
+                st.write(f"Idea {index}: {response}")
 
-        submit_button_key = f"submit_button_{option.replace(' ', '_').replace('?', '').replace(':', '').replace('(', '').replace(')', '')}_{st.session_state['submit_button_counter']}"
+        if st.button("Facilitate Team Discussions"):
+            with st.spinner("Facilitating discussion..."):
+                responses = generate_responses(file_content, "What are the main benefits of this feature for the customer?")
+            st.success("Discussion Facilitated!")
 
-        if st.button("Submit", key=submit_button_key) and user_role:
-            with st.spinner("Processing..."):
-                responses = generate_responses(file_content, user_role)
-                st.success("Task Completed!")
+            for index, response in enumerate(responses, start=1):
+                st.write(f"Response {index}: {response}")
 
-                for index, response in enumerate(responses, start=1):
-                    st.write(f"Response {index}: {response}")
+        if st.button("Estimate Effort and Identify Risks"):
+            with st.spinner("Estimating effort and identifying risks..."):
+                responses = generate_responses(file_content, "What tasks are dependent on the completion of task X?")
+            st.success("Effort Estimated and Risks Identified!")
 
-            st.session_state['submit_button_counter'] += 1
-        elif st.button("Submit", key=submit_button_key):
-            st.warning("Please select a question.")
+            for index, response in enumerate(responses, start=1):
+                st.write(f"Response {index}: {response}")
+
 
 if __name__ == "__main__":
-    if 'submit_button_counter' not in st.session_state:
-        st.session_state['submit_button_counter'] = 0
     main()
