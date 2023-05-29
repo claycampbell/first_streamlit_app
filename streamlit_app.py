@@ -8,10 +8,10 @@ api_key = os.getenv('OPENAI_API_KEY')
 openai.api_key = api_key
 
 # Define the conversation with the model
-def generate_user_stories(file_content, user_role):
+def generate_responses(file_content, user_role):
     conversation = [
-        {"role": "system", "content": "You are a technical business analyst."},
-        {"role": "user", "content": "Here is a PDF document. Can you analyze it and generate user stories based on its content?"},
+        {"role": "system", "content": "You are a helpful assistant."},
+        {"role": "user", "content": "Here is a PDF document. Can you analyze it and provide information based on its content?"},
         {"role": "assistant", "content": file_content},
         {"role": "user", "content": user_role}
     ]
@@ -31,9 +31,9 @@ def generate_user_stories(file_content, user_role):
 
 
 def main():
-    st.title("PDF User Stories Generator")
+    st.title("PDF Assistant")
 
-    st.write("Upload a PDF file to generate user stories.")
+    st.write("Upload a PDF file to get information and facilitate discussions.")
 
     uploaded_file = st.file_uploader("Choose a PDF file", type="pdf")
 
@@ -43,24 +43,38 @@ def main():
         for page in pdf_reader.pages:
             file_content += page.extract_text()
 
-        if st.button("Generate User Stories"):
-            with st.spinner("Generating user stories..."):
-                user_stories = generate_user_stories(file_content, "What are the acceptance criteria for these user stories?")
+        if st.button("Generate Ideas for User Stories"):
+            with st.spinner("Generating ideas..."):
+                responses = generate_responses(file_content, "Generate ideas for user stories.")
+            st.success("Ideas Generated!")
 
-            st.success("User Stories Generated!")
+            for index, response in enumerate(responses, start=1):
+                st.write(f"Idea {index}: {response}")
 
-            for index, story in enumerate(user_stories, start=1):
-                st.write(f"User Story {index}: {story}")
+        if st.button("Facilitate Team Discussions"):
+            question = st.selectbox("Select a question", [
+                "What are the main benefits of this feature for the customer?",
+                "What are the key requirements for this feature to be successful?",
+                "What are some potential challenges or limitations of this feature?"
+            ])
+            with st.spinner("Facilitating discussion..."):
+                responses = generate_responses(file_content, question)
+            st.success("Discussion Facilitated!")
 
-        if st.button("Ask Another Question"):
-            question = st.text_input("Enter your question:")
-            if question:
-                with st.spinner("Getting response..."):
-                    responses = generate_user_stories(file_content, question)
-                st.success("Response Generated!")
+            for index, response in enumerate(responses, start=1):
+                st.write(f"Response {index}: {response}")
 
-                for index, response in enumerate(responses, start=1):
-                    st.write(f"Response {index}: {response}")
+        if st.button("Estimate Effort and Identify Risks"):
+            question = st.selectbox("Select a question", [
+                "What tasks are dependent on the completion of task X?",
+                "Which tasks will be impacted if task Y is delayed?"
+            ])
+            with st.spinner("Estimating effort and identifying risks..."):
+                responses = generate_responses(file_content, question)
+            st.success("Effort Estimated and Risks Identified!")
+
+            for index, response in enumerate(responses, start=1):
+                st.write(f"Response {index}: {response}")
 
 
 if __name__ == "__main__":
