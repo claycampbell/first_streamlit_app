@@ -35,7 +35,7 @@ def main():
     st.set_page_config(page_title="Snowbotium", page_icon=":snowflake:")
 
     # Header
-    st.title("Snowbotium")
+    st.title(":snowflake: Snowbotium")
     st.markdown("Accelerate Your Data Migration Project")
 
     # Upload a PDF file
@@ -93,9 +93,6 @@ def main():
             for index, response in enumerate(responses, start=1):
                 st.write(f"Response {index}: {response}")
 
-    # Footer
-    st.sidebar.markdown("---")
-    st.sidebar.markdown("Snowbotium - Powered by Haker AI")
 
 if __name__ == "__main__":
     main()
