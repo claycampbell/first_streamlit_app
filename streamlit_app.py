@@ -54,14 +54,16 @@ def main():
         else:
             user_role = ""
 
-        if st.button("Submit", key="submit_button") and user_role:
+        submit_button_key = "submit_button_" + option.replace(" ", "_")
+
+        if st.button("Submit", key=submit_button_key) and user_role:
             with st.spinner("Processing..."):
                 responses = generate_responses(file_content, user_role)
                 st.success("Task Completed!")
 
                 for index, response in enumerate(responses, start=1):
                     st.write(f"Response {index}: {response}")
-        elif st.button("Submit", key="submit_button"):
+        elif st.button("Submit", key=submit_button_key):
             st.warning("Please select a question.")
 
 if __name__ == "__main__":
