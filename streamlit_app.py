@@ -31,9 +31,9 @@ def generate_responses(file_content, user_role):
 
 
 def main():
-    st.title("PDF Assistant")
+    st.title("Snowbotium")
 
-    st.write("Upload a PDF file to get information and facilitate discussions.")
+    st.write("Upload a PDF file to get generate project assets and facilitate discussions.")
 
     uploaded_file = st.file_uploader("Choose a PDF file", type="pdf")
 
