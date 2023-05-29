@@ -89,5 +89,5 @@ def main():
                 df_expanded = df.explode("User Story").reset_index(drop=True)
                 st.table(df_expanded)
 
-
 if __name__ == "__main__":
+    main()
