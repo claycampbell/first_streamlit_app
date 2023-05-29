@@ -43,27 +43,26 @@ def main():
         for page in pdf_reader.pages:
             file_content += page.extract_text()
 
-        selected_option = st.selectbox("Select an option:", ("Generate Ideas for User Stories", "Facilitate Team Discussions", "Estimate Effort and Identify Risks"))
+        option = st.selectbox("Select an option:", ("Generate Ideas for User Stories", "Facilitate Team Discussions", "Estimate Effort and Identify Risks"))
 
-        if st.button("Submit"):
+        if option == "Generate Ideas for User Stories":
+            user_role = st.text_input("Enter your role:", "Generate ideas for user stories.")
+        elif option == "Facilitate Team Discussions":
+            user_role = st.selectbox("Select a question:", ("What are the main benefits of this feature for the customer?", "What are the key requirements for this feature to be successful?", "What are some potential challenges or limitations of this feature?"))
+        elif option == "Estimate Effort and Identify Risks":
+            user_role = st.selectbox("Select a question:", ("What tasks are dependent on the completion of task X?", "Which tasks will be impacted if task Y is delayed?"))
+        else:
+            user_role = ""
+
+        if st.button("Submit") and user_role:
             with st.spinner("Processing..."):
-                if selected_option == "Generate Ideas for User Stories":
-                    user_role = "Generate ideas for user stories."
-                elif selected_option == "Facilitate Team Discussions":
-                    user_role = "What are the main benefits of this feature for the customer?"
-                elif selected_option == "Estimate Effort and Identify Risks":
-                    user_role = "What tasks are dependent on the completion of task X?"
-                else:
-                    user_role = ""
+                responses = generate_responses(file_content, user_role)
+                st.success("Task Completed!")
 
-                if user_role:
-                    responses = generate_responses(file_content, user_role)
-                    st.success("Task Completed!")
-
-                    for index, response in enumerate(responses, start=1):
-                        st.write(f"Response {index}: {response}")
-                else:
-                    st.warning("Please select an option.")
+                for index, response in enumerate(responses, start=1):
+                    st.write(f"Response {index}: {response}")
+        elif st.button("Submit"):
+            st.warning("Please select a question.")
 
 if __name__ == "__main__":
     main()
