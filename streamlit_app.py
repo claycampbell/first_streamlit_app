@@ -12,9 +12,6 @@ import io
 import asyncio
 import pickle
 
-# Rest of your code...
-
-
 load_dotenv()
 api_key = os.getenv('OPENAI_API_KEY')
 
@@ -49,6 +46,26 @@ async def generate_user_stories():
     prompt = "Take this document and turn it into user stories that I can give my engineering team to begin development."
     result = await conversational_chat(prompt)
     display_output(result)
+
+def summarize_document():
+    # Implementation of the "Summarize Document" functionality
+    pass
+
+def extract_key_topics():
+    # Implementation of the "Extract Key Topics" functionality
+    pass
+
+def identify_stakeholders():
+    # Implementation of the "Identify Stakeholders" functionality
+    pass
+
+def create_feature_list():
+    # Implementation of the "Create Feature List" functionality
+    pass
+
+def generate_use_cases():
+    # Implementation of the "Generate Use Cases" functionality
+    pass
 
 # Load the OpenAI chat model
 chat_model = ChatOpenAI(model_name="gpt-3.5-turbo")
@@ -85,8 +102,6 @@ if st.button("Generate Use Cases"):
 if st.button("Generate User Stories"):
     asyncio.run(generate_user_stories())
 
-llm = ChatOpenAI(model_name="gpt-3.5-turbo")
-
 if 'history' not in st.session_state:
     st.session_state['history'] = []
 
@@ -102,4 +117,4 @@ if uploaded_file is not None:
         uploaded_file.seek(0)
         file = uploaded_file.read()
         vectors = get_doc_embeddings(io.BytesIO(file), uploaded_file.name)
-        qa = ConversationalRetrieval
+        qa = chat_model
