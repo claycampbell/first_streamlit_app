@@ -52,10 +52,21 @@ def main():
                 responses = generate_responses(file_content, "Generate ideas for user stories.")
             st.success("Ideas Generated!")
 
-            # Display Responses
+            # Display Ideas
             with col2:
                 for index, response in enumerate(responses, start=1):
-                    st.write(f"Idea {index}: {response}")
+                    if response.startswith("Idea"):
+                        st.write(f"{response}\n")
+                    else:
+                        st.write(response)
+
+                    if response.startswith("Idea"):
+                        user_story_button_id = f"user_story_button_{index}"
+                        if st.button("Generate User Story", key=user_story_button_id):
+                            user_story_responses = generate_responses(file_content, "Generate user story.")
+                            for user_story_response in user_story_responses:
+                                if not user_story_response.startswith("Idea"):
+                                    st.write(f"User Story: {user_story_response}\n")
 
         # Explain Customer Benefits
         if col1.button("Explain Customer Benefits"):
