@@ -43,30 +43,27 @@ def main():
         for page in pdf_reader.pages:
             file_content += page.extract_text()
 
-        if st.button("Generate Ideas for User Stories"):
-            with st.spinner("Generating ideas..."):
-                responses = generate_responses(file_content, "Generate ideas for user stories.")
-            st.success("Ideas Generated!")
+        selected_option = st.selectbox("Select an option:", ("Generate Ideas for User Stories", "Facilitate Team Discussions", "Estimate Effort and Identify Risks"))
 
-            for index, response in enumerate(responses, start=1):
-                st.write(f"Idea {index}: {response}")
+        if st.button("Submit"):
+            with st.spinner("Processing..."):
+                if selected_option == "Generate Ideas for User Stories":
+                    user_role = "Generate ideas for user stories."
+                elif selected_option == "Facilitate Team Discussions":
+                    user_role = "What are the main benefits of this feature for the customer?"
+                elif selected_option == "Estimate Effort and Identify Risks":
+                    user_role = "What tasks are dependent on the completion of task X?"
+                else:
+                    user_role = ""
 
-        if st.button("Facilitate Team Discussions"):
-            with st.spinner("Facilitating discussion..."):
-                responses = generate_responses(file_content, "What are the main benefits of this feature for the customer?")
-            st.success("Discussion Facilitated!")
+                if user_role:
+                    responses = generate_responses(file_content, user_role)
+                    st.success("Task Completed!")
 
-            for index, response in enumerate(responses, start=1):
-                st.write(f"Response {index}: {response}")
-
-        if st.button("Estimate Effort and Identify Risks"):
-            with st.spinner("Estimating effort and identifying risks..."):
-                responses = generate_responses(file_content, "What tasks are dependent on the completion of task X?")
-            st.success("Effort Estimated and Risks Identified!")
-
-            for index, response in enumerate(responses, start=1):
-                st.write(f"Response {index}: {response}")
-
+                    for index, response in enumerate(responses, start=1):
+                        st.write(f"Response {index}: {response}")
+                else:
+                    st.warning("Please select an option.")
 
 if __name__ == "__main__":
     main()
