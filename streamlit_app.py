@@ -22,7 +22,7 @@ def generate_user_stories(file_content):
     )
 
     # Extract the user stories from the model's response
-    user_stories = [message['content'] for message in response['choices'][0]['message'] if 'content' in message and message['role'] == 'assistant']
+    user_stories = [message['content']['content'] for message in response['choices'][0]['message'] if 'content' in message and message['role'] == 'assistant']
     return user_stories
 
 
