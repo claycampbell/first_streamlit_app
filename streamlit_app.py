@@ -46,22 +46,22 @@ def main():
         option = st.selectbox("Select an option:", ("Generate Ideas for User Stories", "Facilitate Team Discussions", "Estimate Effort and Identify Risks"))
 
         if option == "Generate Ideas for User Stories":
-            user_role = st.text_input("Enter your role:", "Generate ideas for user stories.")
+            user_role = st.text_input("Enter your role:", "Generate ideas for user stories.", key="user_role_text")
         elif option == "Facilitate Team Discussions":
-            user_role = st.selectbox("Select a question:", ("What are the main benefits of this feature for the customer?", "What are the key requirements for this feature to be successful?", "What are some potential challenges or limitations of this feature?"))
+            user_role = st.selectbox("Select a question:", ("What are the main benefits of this feature for the customer?", "What are the key requirements for this feature to be successful?", "What are some potential challenges or limitations of this feature?"), key="user_role_dropdown")
         elif option == "Estimate Effort and Identify Risks":
-            user_role = st.selectbox("Select a question:", ("What tasks are dependent on the completion of task X?", "Which tasks will be impacted if task Y is delayed?"))
+            user_role = st.selectbox("Select a question:", ("What tasks are dependent on the completion of task X?", "Which tasks will be impacted if task Y is delayed?"), key="user_role_dropdown")
         else:
             user_role = ""
 
-        if st.button("Submit") and user_role:
+        if st.button("Submit", key="submit_button") and user_role:
             with st.spinner("Processing..."):
                 responses = generate_responses(file_content, user_role)
                 st.success("Task Completed!")
 
                 for index, response in enumerate(responses, start=1):
                     st.write(f"Response {index}: {response}")
-        elif st.button("Submit"):
+        elif st.button("Submit", key="submit_button"):
             st.warning("Please select a question.")
 
 if __name__ == "__main__":
