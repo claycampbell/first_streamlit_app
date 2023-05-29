@@ -41,50 +41,44 @@ def main():
         for page in pdf_reader.pages:
             file_content += page.extract_text()
 
-        # Create columns for buttons and responses
-        col1, col2 = st.beta_columns(2)
-
         # Generate Ideas for User Stories
-        if col1.button("Generate Ideas for User Stories"):
+        if st.button("Generate Ideas for User Stories"):
             with st.spinner("Generating ideas..."):
                 responses = generate_responses(file_content, "Generate ideas for user stories.", "")
 
             # Display Ideas
-            with col2:
-                for index, response in enumerate(responses, start=1):
-                    if response.startswith("Idea"):
-                        st.write(f"{response}\n")
-                    else:
-                        st.write(response)
+            for index, response in enumerate(responses, start=1):
+                if response.startswith("Idea"):
+                    st.write(f"{response}\n")
+                else:
+                    st.write(response)
 
-                    if response.startswith("Idea"):
-                        user_story_button_id = f"user_story_button_{index}"
-                        if st.button("Generate User Story", key=user_story_button_id):
-                            user_story = response.split(": ")[1]
-                            user_story_response = generate_responses(file_content, "Generate user story.", user_story)
-                            st.write(f"User Story: {user_story_response}\n")
+                if response.startswith("Idea"):
+                    user_story_button_id = f"user_story_button_{index}"
+                    if st.button("Generate User Story", key=user_story_button_id):
+                        user_story = response.split(": ")[1]
+                        user_story_response = generate_responses(file_content, "Generate user story.", user_story)
+                        st.write(f"User Story: {user_story_response}\n")
 
         # Explain Customer Benefits
-        if col1.button("Explain Customer Benefits"):
+        if st.button("Explain Customer Benefits"):
             with st.spinner("Explaining Benefits..."):
                 responses = generate_responses(file_content, "What are the main benefits of this project for the customer?", "")
             st.success("Benefits Explained!")
 
             # Display Responses
-            with col2:
-                for index, response in enumerate(responses, start=1):
-                    st.write(f"Response {index}: {response}")
+            for index, response in enumerate(responses, start=1):
+                st.write(f"Response {index}: {response}")
 
         # Estimate Effort and Identify Risks
-        if col1.button("Estimate Effort and Identify Risks"):
+        if st.button("Estimate Effort and Identify Risks"):
             with st.spinner("Estimating effort and identifying risks..."):
                 responses = generate_responses(file_content, "What are the main tasks required to complete this project?", "")
             st.success("Effort Estimated and Risks Identified!")
 
             # Display Responses
-            with col2:
-                for index, response in enumerate(responses, start=1):
-                    st.write(f"Response {index}: {response}")
+            for index, response in enumerate(responses, start=1):
+                st.write(f"Response {index}: {response}")
 
 
 if __name__ == "__main__":
