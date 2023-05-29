@@ -1,11 +1,11 @@
 import streamlit as st
 import openai
 import os
+import PyPDF2
 
 # Get the OpenAI API key from environment variables
 api_key = os.getenv('OPENAI_API_KEY')
 openai.api_key = api_key
-
 
 # Define the conversation with the model
 def generate_user_stories(file_content):
@@ -34,7 +34,10 @@ def main():
     uploaded_file = st.file_uploader("Choose a PDF file", type="pdf")
 
     if uploaded_file is not None:
-        file_content = uploaded_file.read().decode("utf-8")
+        pdf_reader = PyPDF2.PdfReader(uploaded_file)
+        file_content = ""
+        for page in pdf_reader.pages:
+            file_content += page.extract_text()
 
         if st.button("Generate User Stories"):
             with st.spinner("Generating user stories..."):
