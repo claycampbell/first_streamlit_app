@@ -9,13 +9,12 @@ api_key = os.getenv('OPENAI_API_KEY')
 openai.api_key = api_key
 
 # Define the conversation with the model
-def generate_responses(file_content, user_role, user_story):
+def generate_responses(file_content, user_role):
     conversation = [
         {"role": "system", "content": "You are a technical business analyst."},
         {"role": "user", "content": "Here is a PDF document. Can you analyze it and provide information based on its content?"},
         {"role": "assistant", "content": file_content},
-        {"role": "user", "content": user_role},
-        {"role": "assistant", "content": user_story}
+        {"role": "user", "content": user_role}
     ]
 
     # Call OpenAI Chat Completion API
@@ -24,9 +23,12 @@ def generate_responses(file_content, user_role, user_story):
         messages=conversation,
     )
 
-    # Extract the response from the model's output
-    user_story_response = response.choices[0].message.content
-    return user_story_response
+    # Extract the responses from the model's output
+    responses = []
+    for choice in response.choices:
+        response_text = choice.message.content
+        responses.append(response_text)
+    return responses
 
 
 def main():
@@ -42,51 +44,44 @@ def main():
         for page in pdf_reader.pages:
             file_content += page.extract_text()
 
-        # Generate Ideas for User Stories
-        if st.button("Generate Ideas for User Stories"):
-            with st.spinner("Generating ideas..."):
-                responses = generate_responses(file_content, "Generate ideas for user stories.", "")
+        # Create columns for buttons and responses
+        col1, col2 = st.beta_columns(2)
 
-            # Display Ideas
-            ideas = []
-            for response in responses:
-                if response.startswith("Idea"):
-                    ideas.append(response)
-            df_ideas = pd.DataFrame({"Ideas": ideas})
-            st.table(df_ideas)
+        # Generate Ideas for User Stories
+        if col1.button("Generate Ideas for User Stories"):
+            with st.spinner("Generating ideas..."):
+                responses = generate_responses(file_content, "Generate ideas for user stories.")
+            st.success("Ideas Generated!")
+
+            # Display Responses
+            with col2:
+                data = {"Ideas": responses}
+                df = pd.DataFrame(data)
+                st.table(df)
 
         # Explain Customer Benefits
-        if st.button("Explain Customer Benefits"):
+        if col1.button("Explain Customer Benefits"):
             with st.spinner("Explaining Benefits..."):
-                responses = generate_responses(file_content, "What are the main benefits of this project for the customer?", "")
+                responses = generate_responses(file_content, "What are the main benefits of this project for the customer?")
             st.success("Benefits Explained!")
 
             # Display Responses
-            df_benefits = pd.DataFrame({"Responses": responses})
-            st.table(df_benefits)
+            with col2:
+                data = {"Responses": responses}
+                df = pd.DataFrame(data)
+                st.table(df)
 
         # Estimate Effort and Identify Risks
-        if st.button("Estimate Effort and Identify Risks"):
+        if col1.button("Estimate Effort and Identify Risks"):
             with st.spinner("Estimating effort and identifying risks..."):
-                responses = generate_responses(file_content, "What are the main tasks required to complete this project?", "")
+                responses = generate_responses(file_content, "What are the main tasks required to complete this project?")
             st.success("Effort Estimated and Risks Identified!")
 
             # Display Responses
-            df_tasks = pd.DataFrame({"Responses": responses})
-            st.table(df_tasks)
-
-        # Generate User Story
-        if st.button("Generate User Story"):
-            user_story_input = st.text_input("Enter the idea number to generate a user story:", value="")
-            if user_story_input:
-                user_story_index = int(user_story_input) - 1
-                if 0 <= user_story_index < len(responses):
-                    idea = responses[user_story_index]
-                    if idea.startswith("Idea"):
-                        user_story = idea.split(": ")[1]
-                        user_story_response = generate_responses(file_content, "Generate user story.", user_story)
-                        st.write("Generated User Story:")
-                        st.write(user_story_response)
+            with col2:
+                data = {"Responses": responses}
+                df = pd.DataFrame(data)
+                st.table(df)
 
 
 if __name__ == "__main__":
