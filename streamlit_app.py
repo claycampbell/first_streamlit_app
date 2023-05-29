@@ -53,10 +53,11 @@ def main():
                 responses = generate_responses(file_content, "Generate ideas for user stories.")
             st.success("Ideas Generated!")
 
-            # Display Responses
+            # Display Responses in Table
             with col2:
-                for index, response in enumerate(responses, start=1):
-                    st.write(f"User Story {index}: {response}")
+                data = {"User Story": responses}
+                df = pd.DataFrame(data)
+                st.table(df)
 
         # Explain Customer Benefits
         if col1.button("Explain Customer Benefits"):
@@ -64,10 +65,11 @@ def main():
                 responses = generate_responses(file_content, "What are the main benefits of this project for the customer?")
             st.success("Benefits Explained!")
 
-            # Display Responses
+            # Display Responses in Table
             with col2:
-                for index, response in enumerate(responses, start=1):
-                    st.write(f"User Story {index}: {response}")
+                data = {"User Story": responses}
+                df = pd.DataFrame(data)
+                st.table(df)
 
         # Estimate Effort and Identify Risks
         if col1.button("Estimate Effort and Identify Risks"):
@@ -75,10 +77,11 @@ def main():
                 responses = generate_responses(file_content, "What are the main tasks required to complete this project?")
             st.success("Effort Estimated and Risks Identified!")
 
-            # Display Responses
+            # Display Responses in Table
             with col2:
-                for index, response in enumerate(responses, start=1):
-                    st.write(f"User Story {index}: {response}")
+                data = {"User Story": responses}
+                df = pd.DataFrame(data)
+                st.table(df)
 
 
 if __name__ == "__main__":
