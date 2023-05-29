@@ -27,8 +27,6 @@ def generate_user_stories(file_content, user_role):
     for choice in response.choices:
         output_text = choice.message.content
         user_stories.append(output_text)
-        print(output_text)
-        print("------")
     return user_stories
 
 
