@@ -51,7 +51,7 @@ def main():
             for index, response in enumerate(responses, start=1):
                 st.write(f"Idea {index}: {response}")
 
-        if st.button("Facilitate Team Discussions"):
+        if st.button("Business Explaination"):
             question = st.selectbox("Select a question", [
                 "What are the main benefits of this feature for the customer?",
                 "What are the key requirements for this feature to be successful?",
@@ -66,8 +66,8 @@ def main():
 
         if st.button("Estimate Effort and Identify Risks"):
             question = st.selectbox("Select a question", [
-                "What tasks are dependent on the completion of task X?",
-                "Which tasks will be impacted if task Y is delayed?"
+                "What are all the tasks required to accomplish this scope?",
+                "Which are the most import tasks and would lead to project success risk if not accomplished?"
             ])
             with st.spinner("Estimating effort and identifying risks..."):
                 responses = generate_responses(file_content, question)
