@@ -57,8 +57,7 @@ def main():
             with col2:
                 data = {"User Story": responses}
                 df = pd.DataFrame(data)
-                df["User Story"] = df["User Story"].str.split("|")
-                df_expanded = df.explode("User Story").reset_index(drop=True)
+                df_expanded = df["User Story"].str.split(".", expand=True).dropna().reset_index(drop=True)
                 st.table(df_expanded)
 
         # Explain Customer Benefits
@@ -71,8 +70,7 @@ def main():
             with col2:
                 data = {"User Story": responses}
                 df = pd.DataFrame(data)
-                df["User Story"] = df["User Story"].str.split("|")
-                df_expanded = df.explode("User Story").reset_index(drop=True)
+                df_expanded = df["User Story"].str.split(".", expand=True).dropna().reset_index(drop=True)
                 st.table(df_expanded)
 
         # Estimate Effort and Identify Risks
@@ -85,9 +83,9 @@ def main():
             with col2:
                 data = {"User Story": responses}
                 df = pd.DataFrame(data)
-                df["User Story"] = df["User Story"].str.split("|")
-                df_expanded = df.explode("User Story").reset_index(drop=True)
+                df_expanded = df["User Story"].str.split(".", expand=True).dropna().reset_index(drop=True)
                 st.table(df_expanded)
+
 
 if __name__ == "__main__":
     main()
