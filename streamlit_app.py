@@ -21,7 +21,7 @@ api_key = os.getenv('OPENAI_API_KEY')
 
 # ...
 
-def main():
+async def main():
     # ...
 
     # Creating the chatbot interface
