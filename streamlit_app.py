@@ -23,14 +23,13 @@ def generate_responses(file_content, user_role):
         messages=conversation,
     )
 
-    # Extract the responses from the model's output
-    responses = []
-    for choice in response.choices:
-        response_text = choice.message.content
-        response_columns = response_text.split(":", 1)
-        responses.append(response_columns)
-    return responses
+    # Extract the response text from the model's output
+    response_text = response.choices[0].message.content
 
+    # Split the response based on the delimiter "#"
+    user_stories = response_text.split("#")
+
+    return user_stories
 
 def main():
     st.title("PDF Assistant")
@@ -56,8 +55,8 @@ def main():
 
             # Display Responses
             with col2:
-                df = pd.DataFrame(responses, columns=["Column 1", "Column 2"])
-                st.table(df)
+                for index, response in enumerate(responses, start=1):
+                    st.write(f"User Story {index}: {response}")
 
         # Explain Customer Benefits
         if col1.button("Explain Customer Benefits"):
@@ -67,8 +66,8 @@ def main():
 
             # Display Responses
             with col2:
-                df = pd.DataFrame(responses, columns=["Column 1", "Column 2"])
-                st.table(df)
+                for index, response in enumerate(responses, start=1):
+                    st.write(f"User Story {index}: {response}")
 
         # Estimate Effort and Identify Risks
         if col1.button("Estimate Effort and Identify Risks"):
@@ -78,8 +77,8 @@ def main():
 
             # Display Responses
             with col2:
-                df = pd.DataFrame(responses, columns=["Column 1", "Column 2"])
-                st.table(df)
+                for index, response in enumerate(responses, start=1):
+                    st.write(f"User Story {index}: {response}")
 
 
 if __name__ == "__main__":
