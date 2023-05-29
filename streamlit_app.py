@@ -10,7 +10,7 @@ openai.api_key = api_key
 # Define the conversation with the model
 def generate_user_stories(file_content, user_role):
     conversation = [
-        {"role": "system", "content": "You are a helpful assistant."},
+        {"role": "system", "content": "You are a technical business analyst."},
         {"role": "user", "content": "Here is a PDF document. Can you analyze it and generate user stories based on its content?"},
         {"role": "assistant", "content": file_content},
         {"role": "user", "content": user_role}
@@ -22,12 +22,12 @@ def generate_user_stories(file_content, user_role):
         messages=conversation,
     )
 
-    # Extract the user stories from the model's response
-    user_stories = []
+    # Extract the responses from the model's output
+    responses = []
     for choice in response.choices:
-        output_text = choice.message.content
-        user_stories.append(output_text)
-    return user_stories
+        response_text = choice.message.content
+        responses.append(response_text)
+    return responses
 
 
 def main():
@@ -56,11 +56,11 @@ def main():
             question = st.text_input("Enter your question:")
             if question:
                 with st.spinner("Getting response..."):
-                    user_stories = generate_user_stories(file_content, question)
+                    responses = generate_user_stories(file_content, question)
                 st.success("Response Generated!")
 
-                for index, story in enumerate(user_stories, start=1):
-                    st.write(f"Response {index}: {story}")
+                for index, response in enumerate(responses, start=1):
+                    st.write(f"Response {index}: {response}")
 
 
 if __name__ == "__main__":
