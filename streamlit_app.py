@@ -57,7 +57,8 @@ def main():
             with col2:
                 data = {"User Story": responses}
                 df = pd.DataFrame(data)
-                st.table(df)
+                df["User Story"] = df["User Story"].str.split("|")
+                st.table(df.explode("User Story").reset_index(drop=True))
 
         # Explain Customer Benefits
         if col1.button("Explain Customer Benefits"):
@@ -69,7 +70,8 @@ def main():
             with col2:
                 data = {"User Story": responses}
                 df = pd.DataFrame(data)
-                st.table(df)
+                df["User Story"] = df["User Story"].str.split("|")
+                st.table(df.explode("User Story").reset_index(drop=True))
 
         # Estimate Effort and Identify Risks
         if col1.button("Estimate Effort and Identify Risks"):
@@ -81,7 +83,8 @@ def main():
             with col2:
                 data = {"User Story": responses}
                 df = pd.DataFrame(data)
-                st.table(df)
+                df["User Story"] = df["User Story"].str.split("|")
+                st.table(df.explode("User Story").reset_index(drop=True))
 
 
 if __name__ == "__main__":
