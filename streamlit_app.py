@@ -10,7 +10,7 @@ openai.api_key = api_key
 # Define the conversation with the model
 def generate_responses(file_content, user_role):
     conversation = [
-        {"role": "system", "content": "You are a helpful assistant."},
+        {"role": "system", "content": "You are a technical business analyst."},
         {"role": "user", "content": "Here is a PDF document. Can you analyze it and provide information based on its content?"},
         {"role": "assistant", "content": file_content},
         {"role": "user", "content": user_role}
@@ -51,26 +51,17 @@ def main():
             for index, response in enumerate(responses, start=1):
                 st.write(f"Idea {index}: {response}")
 
-        if st.button("Business Explaination"):
-            question = st.selectbox("Select a question", [
-                "What are the main benefits of this feature for the customer?",
-                "What are the key requirements for this feature to be successful?",
-                "What are some potential challenges or limitations of this feature?"
-            ])
+        if st.button("Facilitate Team Discussions"):
             with st.spinner("Facilitating discussion..."):
-                responses = generate_responses(file_content, question)
+                responses = generate_responses(file_content, "What are the main benefits of this feature for the customer?")
             st.success("Discussion Facilitated!")
 
             for index, response in enumerate(responses, start=1):
                 st.write(f"Response {index}: {response}")
 
         if st.button("Estimate Effort and Identify Risks"):
-            question = st.selectbox("Select a question", [
-                "What are all the tasks required to accomplish this scope?",
-                "Which are the most import tasks and would lead to project success risk if not accomplished?"
-            ])
             with st.spinner("Estimating effort and identifying risks..."):
-                responses = generate_responses(file_content, question)
+                responses = generate_responses(file_content, "What tasks are dependent on the completion of task X?")
             st.success("Effort Estimated and Risks Identified!")
 
             for index, response in enumerate(responses, start=1):
