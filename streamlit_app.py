@@ -14,7 +14,7 @@ def generate_responses(file_content, user_role):
         {"role": "system", "content": "You are a technical business analyst."},
         {"role": "user", "content": "Here is a PDF document. Can you analyze it and provide information based on its content?"},
         {"role": "assistant", "content": file_content},
-        {"role": "user", "content": user_role}
+        {"role": "user", "content": user_role}that
     ]
 
     # Call OpenAI Chat Completion API
