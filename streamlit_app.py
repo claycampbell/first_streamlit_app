@@ -73,19 +73,16 @@ def main():
             for index, response in enumerate(responses, start=1):
                 st.write(f"Response {index}: {response}")
 
-    # Create Project Plan
-    if st.button("Create Project Plan"):
-        if uploaded_file is None:
-            st.warning("Please upload a PDF file first.")
-        else:
+        # Create Project Plan
+        if st.button("Create Project Plan"):
             with st.spinner("Creating project plan..."):
                 responses = generate_responses(file_content, "Create a project plan for this Project.")
             st.success("Project Plan Created!")
 
-            # Display Project Plan
+            # Display Responses
             st.subheader("Project Plan:")
             for index, response in enumerate(responses, start=1):
-                st.write(response)
+                st.write(f"Response {index}: {response}")
 
 
 if __name__ == "__main__":
