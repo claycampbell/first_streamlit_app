@@ -57,7 +57,6 @@ def main():
             with col2:
                 data = {"User Story": responses}
                 df = pd.DataFrame(data)
-                df = df["User Story"].str.split(".", expand=True).dropna().reset_index(drop=True)
                 st.table(df)
 
         # Explain Customer Benefits
@@ -70,7 +69,6 @@ def main():
             with col2:
                 data = {"User Story": responses}
                 df = pd.DataFrame(data)
-                df = df["User Story"].str.split(".", expand=True).dropna().reset_index(drop=True)
                 st.table(df)
 
         # Estimate Effort and Identify Risks
@@ -83,7 +81,6 @@ def main():
             with col2:
                 data = {"User Story": responses}
                 df = pd.DataFrame(data)
-                df = df["User Story"].str.split(".", expand=True).dropna().reset_index(drop=True)
                 st.table(df)
 
 
