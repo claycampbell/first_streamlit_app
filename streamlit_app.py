@@ -73,6 +73,17 @@ def main():
             for index, response in enumerate(responses, start=1):
                 st.write(f"Response {index}: {response}")
 
+        # Create Project Plan
+        if st.button("Create Project Plan"):
+            with st.spinner("Creating project plan..."):
+                responses = generate_responses(file_content, "Create a project plan for the Snowflake Data Migration Project.")
+            st.success("Project Plan Created!")
+
+            # Display Project Plan
+            st.write("Project Plan:")
+            for index, response in enumerate(responses, start=1):
+                st.write(response)
+
 
 if __name__ == "__main__":
     main()
