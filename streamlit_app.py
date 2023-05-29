@@ -25,7 +25,7 @@ def generate_user_stories(file_content):
     user_stories = []
     for message in response['choices'][0]['message']['content']:
         if 'role' in message and message['role'] == 'assistant' and 'content' in message:
-            user_stories.append(message['content'])
+            user_stories.append(message['content']['text'])
     return user_stories
 
 
