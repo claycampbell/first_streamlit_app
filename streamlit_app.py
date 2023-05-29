@@ -54,7 +54,7 @@ def main():
         else:
             user_role = ""
 
-        submit_button_key = "submit_button_" + option.replace(" ", "_")
+        submit_button_key = "submit_button_" + option.replace(" ", "_").replace("?", "").replace(":", "").replace("(", "").replace(")", "")
 
         if st.button("Submit", key=submit_button_key) and user_role:
             with st.spinner("Processing..."):
