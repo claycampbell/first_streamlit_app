@@ -43,29 +43,41 @@ def main():
         for page in pdf_reader.pages:
             file_content += page.extract_text()
 
+        # Generate Ideas for User Stories
         if st.button("Generate Ideas for User Stories"):
             with st.spinner("Generating ideas..."):
                 responses = generate_responses(file_content, "Generate ideas for user stories.")
             st.success("Ideas Generated!")
 
-            for index, response in enumerate(responses, start=1):
-                st.write(f"Idea {index}: {response}")
+            # Display Responses
+            response_container = st.container()
+            with response_container:
+                for index, response in enumerate(responses, start=1):
+                    st.write(f"Idea {index}: {response}")
 
+        # Explain Customer Benefits
         if st.button("Explain Customer Benefits"):
             with st.spinner("Explaining Benefits..."):
                 responses = generate_responses(file_content, "What are the main benefits of this project for the customer?")
             st.success("Benefits Explained!")
 
-            for index, response in enumerate(responses, start=1):
-                st.write(f"Response {index}: {response}")
+            # Display Responses
+            response_container = st.container()
+            with response_container:
+                for index, response in enumerate(responses, start=1):
+                    st.write(f"Response {index}: {response}")
 
+        # Estimate Effort and Identify Risks
         if st.button("Estimate Effort and Identify Risks"):
             with st.spinner("Estimating effort and identifying risks..."):
                 responses = generate_responses(file_content, "What are the main tasks required to complete this project?")
             st.success("Effort Estimated and Risks Identified!")
 
-            for index, response in enumerate(responses, start=1):
-                st.write(f"Response {index}: {response}")
+            # Display Responses
+            response_container = st.container()
+            with response_container:
+                for index, response in enumerate(responses, start=1):
+                    st.write(f"Response {index}: {response}")
 
 
 if __name__ == "__main__":
