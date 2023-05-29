@@ -79,7 +79,7 @@ def main():
             st.warning("Please upload a PDF file first.")
         else:
             with st.spinner("Creating project plan..."):
-                responses = generate_responses(file_content, "Create a project plan for the Snowflake Data Migration Project.")
+                responses = generate_responses(file_content, "Create a project plan for this Project.")
             st.success("Project Plan Created!")
 
             # Display Project Plan
