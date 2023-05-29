@@ -1,8 +1,8 @@
+import openai
 from PyPDF2 import PdfReader
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.vectorstores import FAISS
-from langchain.chat_models import ChatOpenAI
 from pathlib import Path
 from dotenv import load_dotenv
 import os
@@ -33,7 +33,14 @@ def get_doc_embeddings(file, filename):
     return vectors
 
 async def conversational_chat(query):
-    result = await chat_model.generate(query)
+    response = await openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {"role": "system", "content": "You are a business analyst assistant."},
+            {"role": "user", "content": query},
+        ]
+    )
+    result = response.choices[0].message.content
     st.session_state['history'].append((query, result))
     return result
 
@@ -47,28 +54,8 @@ async def generate_user_stories():
     result = await conversational_chat(prompt)
     display_output(result)
 
-def summarize_document():
-    # Implementation of the "Summarize Document" functionality
-    pass
-
-def extract_key_topics():
-    # Implementation of the "Extract Key Topics" functionality
-    pass
-
-def identify_stakeholders():
-    # Implementation of the "Identify Stakeholders" functionality
-    pass
-
-def create_feature_list():
-    # Implementation of the "Create Feature List" functionality
-    pass
-
-def generate_use_cases():
-    # Implementation of the "Generate Use Cases" functionality
-    pass
-
-# Load the OpenAI chat model
-chat_model = ChatOpenAI(model_name="gpt-3.5-turbo")
+# Load the OpenAI API key
+openai.api_key = api_key
 
 # Create the Streamlit app
 st.title("Business Analyst AI Agent")
@@ -102,19 +89,17 @@ if st.button("Generate Use Cases"):
 if st.button("Generate User Stories"):
     asyncio.run(generate_user_stories())
 
-if 'history' not in st.session_state:
-    st.session_state['history'] = []
+# ...
 
-st.title("PDFChat:")
+llm = openai
 
-if 'ready' not in st.session_state:
-    st.session_state['ready'] = False
+# ...
 
-uploaded_file = st.file_uploader("Choose a PDF file", type="pdf")
+# Replace the usage of ChatOpenAI with OpenAI API
+chat_model = openai
 
-if uploaded_file is not None:
-    with st.spinner("Processing..."):
-        uploaded_file.seek(0)
-        file = uploaded_file.read()
-        vectors = get_doc_embeddings(io.BytesIO(file), uploaded_file.name)
-        qa = chat_model
+# ...
+
+# Run the Streamlit app
+if __name__ == "__main__":
+    main()
