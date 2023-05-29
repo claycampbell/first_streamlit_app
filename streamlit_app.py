@@ -18,35 +18,43 @@ load_dotenv()
 api_key = os.getenv('OPENAI_API_KEY')
 
 
-async def main():
-    async def storeDocEmbeds(file, filename):
-        reader = PdfReader(file)
-        corpus = ''.join([p.extract_text() for p in reader.pages if p.extract_text()])
+async def storeDocEmbeds(file, filename):
+    reader = PdfReader(file)
+    corpus = ''.join([p.extract_text() for p in reader.pages if p.extract_text()])
 
-        splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200, )
-        chunks = splitter.split_text(corpus)
+    splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200, )
+    chunks = splitter.split_text(corpus)
 
-        embeddings = OpenAIEmbeddings(openai_api_key=api_key)
-        vectors = FAISS.from_texts(chunks, embeddings)
+    embeddings = OpenAIEmbeddings(openai_api_key=api_key)
+    vectors = FAISS.from_texts(chunks, embeddings)
 
-        with open(filename + ".pkl", "wb") as f:
-            pickle.dump(vectors, f)
+    with open(filename + ".pkl", "wb") as f:
+        pickle.dump(vectors, f)
 
-    async def getDocEmbeds(file, filename):
-        if not os.path.isfile(filename + ".pkl"):
-            await storeDocEmbeds(file, filename)
 
-        with open(filename + ".pkl", "rb") as f:
-            global vectors
-            vectors = pickle.load(f)
+async def getDocEmbeds(file, filename):
+    if not os.path.isfile(filename + ".pkl"):
+        await storeDocEmbeds(file, filename)
 
-        return vectors
+    with open(filename + ".pkl", "rb") as f:
+        global vectors
+        vectors = pickle.load(f)
 
-    async def conversational_chat(query):
-        result = qa({"question": query, "chat_history": st.session_state['history']})
-        st.session_state['history'].append((query, result["answer"]))
-        return result["answer"]
+    return vectors
 
+
+async def conversational_chat(query):
+    result = qa({"question": query, "chat_history": st.session_state['history']})
+    st.session_state['history'].append((query, result["answer"]))
+    return result["answer"]
+
+
+def send_quick_message():
+    query = "Quick message"  # Set the desired quick message
+    asyncio.create_task(conversational_chat(query))
+
+
+def main():
     llm = ChatOpenAI(model_name="gpt-3.5-turbo")
     chain = load_qa_chain(llm, chain_type="stuff")
 
@@ -89,21 +97,14 @@ async def main():
         # container for text box
         container = st.container()
 
-        # Function to handle the event when the quick message button is clicked
-        def send_quick_message():
-            query = "Quick message"  # Set the desired quick message
-            asyncio.run(conversational_chat(query))
-
         with container:
-            with st.form(key='my_form', clear_on_submit=False):
-                user_input = st.text_input("Query:", placeholder="e.g: Summarize the paper in a few sentences",
-                                           key='input')
-                submit_button = st.form_submit_button(label='Send')
+            user_input = st.text_input("Query:", placeholder="e.g: Summarize the paper in a few sentences", key='input')
+            submit_button = st.button('Send')
 
-            if submit_button and user_input:
-                output = await conversational_chat(user_input)
-                st.session_state['past'].append(user_input)
-                st.session_state['generated'].append(output)
+        if submit_button and user_input:
+            output = await conversational_chat(user_input)
+            st.session_state['past'].append(user_input)
+            st.session_state['generated'].append(output)
 
         quick_message_button = st.button("Quick Message")
 
@@ -118,4 +119,5 @@ async def main():
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    st.experimental_rerun()  # Re-run the Streamlit app to avoid asyncio event loop issues
+    st.experimental_asyncio.run(main())
